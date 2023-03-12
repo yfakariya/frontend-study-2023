@@ -87,7 +87,7 @@ linter:
     - prefer_mixin # effective dart
     - prefer_relative_imports # pedantic
     - prefer_single_quotes
-    - public_member_api_docs # effective dart
+    # - public_member_api_docs # effective dart
     - require_trailing_commas
     - secure_pubspec_urls
     - sized_box_shrink_expand

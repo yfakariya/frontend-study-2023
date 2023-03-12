@@ -1,0 +1,90 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        generate_for:
+          include:
+            - lib/models/*.dart
+      riverpod_generator:
+        generate_for:
+          exclude:
+            - lib/l10n/*
+            - lib/components/*.dart
+            - lib/*.freezed.dart
+            - lib/**/*.freezed.dart
+            - lib/*.g.dart
+            - lib/**/*.g.dart
+      form_companion_generator:
+        generate_for:
+          exclude:
+            - lib/l10n/*
+            - lib/app.dart
+            - lib/home.dart
+            - lib/main.dart
+            - lib/routes.dart
+            - lib/components/*.dart
+            - lib/*.freezed.dart
+            - lib/**/*.freezed.dart
+            - lib/*.g.dart
+            - lib/**/*.g.dart
+          include:
+            - lib/screens/*.dart
+        options:
+          named_templates:
+            label_template:
+              template: 'LocaleKeys.formFields_#PROPERTY_NAME#_label.tr()'
+              imports:
+                LocaleKeys: 'package:github_viewer/l10n/locale_keys.g.dart'
+                StringTranslateExtension: 'package:easy_localization/easy_localization.dart'
+            hint_template:
+              template: 'LocaleKeys.formFields_#PROPERTY_NAME#_hint.tr()'
+              imports:
+                LocaleKeys: 'package:github_viewer/l10n/locale_keys.g.dart'
+                StringTranslateExtension: 'package:easy_localization/easy_localization.dart'
+            item_widget_template:
+              template: "Text('formFields.#PROPERTY_NAME#.${#ITEM_VALUE_STRING#}'.tr())"
+              imports:
+                LocaleKeys: 'package:github_viewer/l10n/locale_keys.g.dart'
+                StringTranslateExtension: 'package:easy_localization/easy_localization.dart'
+                Text: 'package:flutter/widgets.dart'
+          argument_templates:
+            default:
+              autovalidateMode: '#ARGUMENT# ?? #AUTO_VALIDATE_MODE#'
+              decoration: '#ARGUMENT# ?? #DEFAULT_VALUE_COPY_OR_NEW#(labelText: #LABEL_TEMPLATE#, hintText: #HINT_TEMPLATE#)'
+              onChanged: '#PROPERTY#.onChanged(#BUILD_CONTEXT#, #ARGUMENT#)'
+            DropdownButtonFormField:
+              items:
+                item_template: 'DropdownMenuItem<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderDropdown:
+              items:
+                item_template: 'DropdownMenuItem<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderCheckboxGroup:
+              options:
+                item_template: 'FormBuilderFieldOption<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderChoiceChip:
+              options:
+                item_template: 'FormBuilderChipOption<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderDateRangePicker:
+                obscureText : '#ARGUMENT# ?? #PROPERTY#.valueTraits.isSensitive'
+            FormBuilderDateTimePicker:
+                obscureText : '#ARGUMENT# ?? #PROPERTY#.valueTraits.isSensitive'
+            FormBuilderFilterChip:
+              options:
+                item_template: 'FormBuilderChipOption<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderRadioGroup:
+              options:
+                item_template: 'FormBuilderFieldOption<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderSegmentedControl:
+              options:
+                item_template: 'FormBuilderFieldOption<#ITEM_VALUE_TYPE#>(value: #ITEM_VALUE#, child: #ITEM_WIDGET_TEMPLATE#)'
+            FormBuilderTextField:
+              obscureText : '#ARGUMENT# ?? #PROPERTY#.valueTraits.isSensitive'
+            TextFormField:
+              contextMenuBuilder:
+                imports:
+                  'AdaptiveTextSelectionToolbar': 'package:flutter/material.dart'
+                  'EditableTextState': 'package:flutter/widgets.dart'
+              obscureText : '#ARGUMENT# ?? #PROPERTY#.valueTraits.isSensitive'
+              onChanged: '#PROPERTY#.onChangedNonNull(#BUILD_CONTEXT#, #ARGUMENT#)'
+            FormBuilderCheckbox:
+              decoration: '#ARGUMENT# ?? #DEFAULT_VALUE#'
