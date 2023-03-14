@@ -1,6 +1,18 @@
 targets:
   $default:
     builders:
+      slang_build_runner:
+        options:
+          namespaces: true
+          base_locale: en
+          input_directory: assets/l10n
+          input_file_pattern: .l10n.yaml
+          output_directory: lib/l10n
+          output_file_name: l10n.g.dart
+          output_format: single_file
+          pluralization:
+            auto: off
+          translate_var: l10n
       freezed:
         generate_for:
           include:
@@ -32,20 +44,17 @@ targets:
         options:
           named_templates:
             label_template:
-              template: 'LocaleKeys.formFields_#PROPERTY_NAME#_label.tr()'
+              template: 'l10n.formFields.#PROPERTY_NAME#.label'
               imports:
-                LocaleKeys: 'package:github_viewer/l10n/locale_keys.g.dart'
-                StringTranslateExtension: 'package:easy_localization/easy_localization.dart'
+                l10n: 'package:github_viewer/l10n/l10n.g.dart'
             hint_template:
-              template: 'LocaleKeys.formFields_#PROPERTY_NAME#_hint.tr()'
+              template: 'l10n.formFields.#PROPERTY_NAME#.hint'
               imports:
-                LocaleKeys: 'package:github_viewer/l10n/locale_keys.g.dart'
-                StringTranslateExtension: 'package:easy_localization/easy_localization.dart'
+                l10n: 'package:github_viewer/l10n/l10n.g.dart'
             item_widget_template:
-              template: "Text('formFields.#PROPERTY_NAME#.${#ITEM_VALUE_STRING#}'.tr())"
+              template: "Text(l10n['formFields.#PROPERTY_NAME#.${#ITEM_VALUE_STRING#}'] as String)"
               imports:
-                LocaleKeys: 'package:github_viewer/l10n/locale_keys.g.dart'
-                StringTranslateExtension: 'package:easy_localization/easy_localization.dart'
+                l10n: 'package:github_viewer/l10n/l10n.g.dart'
                 Text: 'package:flutter/widgets.dart'
           argument_templates:
             default:

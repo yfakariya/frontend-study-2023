@@ -13,7 +13,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../components/chip_panel.dart';
 import '../components/platform.dart';
 import '../components/screen.dart';
-import '../l10n/locale_keys.g.dart';
+import '../l10n/l10n.g.dart';
 import '../models/auth.dart';
 import '../models/issues.dart';
 import '../routes.dart';
@@ -25,7 +25,7 @@ class IssuesPage extends Screen {
   const IssuesPage({super.key}) : super(withForm: true);
 
   @override
-  String get title => LocaleKeys.issues_title.tr();
+  String get title => l10n.issues.title;
 
   @override
   Widget buildPage(BuildContext context, WidgetRef ref) {
@@ -37,7 +37,7 @@ class IssuesPage extends Screen {
         children: [
           ExpansionTile(
             title: Text(
-              LocaleKeys.issues_searchCondition.tr(),
+              l10n.issues.searchCondition,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             childrenPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -58,7 +58,7 @@ class IssuesPage extends Screen {
                       isDesktop ? Alignment.centerRight : Alignment.center,
                   child: FilledButton(
                     onPressed: state.submit(context),
-                    child: Text(LocaleKeys.issues_search.tr()),
+                    child: Text(l10n.issues.search),
                   ),
                 ),
               ),
@@ -95,7 +95,7 @@ class IssuesPresenter extends _$IssuesPresenter
         ..enumerated(
           name: 'issueState',
           enumValues: IssueState.values,
-          initialValue: IssueState.all,
+          initialValue: IssueState.open,
         )
         ..enumerated(
           name: 'direction',
@@ -167,19 +167,18 @@ class IssuesListPane extends ConsumerWidget {
         Align(
           alignment: isDesktop ? Alignment.centerLeft : Alignment.center,
           child: Text(
-            LocaleKeys.issues_searchResult
-                .tr(namedArgs: {'count': (items?.length ?? 0).toString()}),
+            l10n.issues.searchResult(count: items?.length ?? 0),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         if (issues.hasError)
           ChipPanel.error(
-            plainText: issues.error?.toString() ?? LocaleKeys.common_error.tr(),
+            plainText: issues.error?.toString() ?? l10n.common.error,
           ),
         if (issues.isLoading) const Center(child: CircularProgressIndicator()),
         if (!issues.isLoading && (items?.isEmpty ?? true))
           // L10N
-          Center(child: Text(LocaleKeys.issues_empty.tr())),
+          Center(child: Text(l10n.issues.empty)),
         if (!issues.isLoading && (items?.isNotEmpty ?? false))
           Expanded(
             child: ListView.builder(
@@ -212,16 +211,14 @@ class IssuesListPane extends ConsumerWidget {
             // Previous
             TextButton(
               onPressed: presenter.previousPage(page),
-              child: Text(LocaleKeys.issues_previous.tr()),
+              child: Text(l10n.issues.previous),
             ),
-            Text(
-              LocaleKeys.issues_page.tr(namedArgs: {'page': page.toString()}),
-            ),
+            Text(l10n.issues.page(page: page)),
             // Next
             TextButton(
               onPressed:
                   presenter.nextPage(page, issues.value?.length, issuesPerPage),
-              child: Text(LocaleKeys.issues_next.tr()),
+              child: Text(l10n.issues.next),
             ),
           ],
         ),

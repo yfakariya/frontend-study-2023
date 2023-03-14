@@ -1,14 +1,11 @@
 // See LICENCE file in the root.
 
-import 'dart:io';
-
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_size/window_size.dart';
 
-import '../l10n/locale_keys.g.dart';
+import '../l10n/l10n.g.dart';
 import '../routes.dart';
 import 'platform.dart';
 
@@ -33,11 +30,7 @@ abstract class Screen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
 
-    final appTitle = LocaleKeys.titleTemplate.tr(
-      namedArgs: {
-        'screenName': title,
-      },
-    );
+    final appTitle = l10n.common.titleTemplate(screenName: title);
 
     if (isDesktop) {
       setWindowTitle(appTitle);
@@ -57,15 +50,11 @@ abstract class Screen extends ConsumerWidget {
                 child: ListView(
                   children: [
                     ListTile(
-                      title: Text(
-                        LocaleKeys.issues_title.tr(),
-                      ),
+                      title: Text(l10n.issues.title),
                       onTap: () => router.go(issuesRoute),
                     ),
                     ListTile(
-                      title: Text(
-                        LocaleKeys.signIn_title.tr(),
-                      ),
+                      title: Text(l10n.signIn.title),
                       onTap: () => router.go(loginRoute),
                     ),
                   ],

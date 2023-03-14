@@ -1,0 +1,3 @@
+title: Sign in
+signInButtonLabel: Sign in
+credentialDescription(rich): Input GitHub client ID and client secret which you registered. See ${link} for details.

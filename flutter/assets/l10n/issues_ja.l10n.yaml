@@ -1,0 +1,8 @@
+title: 課題一覧
+search: 検索
+page: ${page} ページ
+next: 次へ
+previous: 前へ
+searchCondition: 検索条件
+searchResult: 検索結果（${count} 件）
+empty: 一致する課題がありません。

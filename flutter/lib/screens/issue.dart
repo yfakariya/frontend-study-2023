@@ -2,17 +2,17 @@
 
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:github/github.dart';
+import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../components/chip_panel.dart';
 import '../components/screen.dart';
 import '../components/web_view.dart';
-import '../l10n/locale_keys.g.dart';
+import '../l10n/l10n.g.dart';
 import '../models/auth.dart';
 import '../models/issues.dart';
 import '../routes.dart';
@@ -33,11 +33,9 @@ class IssuePage extends Screen {
   });
 
   @override
-  String get title => LocaleKeys.issue_title.tr(
-        namedArgs: {
-          'issueNumber': issueNumber,
-          'issueTitle': issueTitle ?? '',
-        },
+  String get title => l10n.issue.title(
+        issueNumber: issueNumber,
+        issueTitle: issueTitle ?? '',
       );
 
   @override
@@ -78,13 +76,11 @@ class IssuePage extends Screen {
       children: [
         if (issueState.hasError)
           ChipPanel.error(
-            plainText:
-                issueState.error?.toString() ?? LocaleKeys.common_error.tr(),
+            plainText: issueState.error?.toString() ?? l10n.common.error,
           ),
         if (loadedWebView.hasError)
           ChipPanel.error(
-            plainText:
-                loadedWebView.error?.toString() ?? LocaleKeys.common_error.tr(),
+            plainText: loadedWebView.error?.toString() ?? l10n.common.error,
           ),
         if (issueState.isLoading)
           const Center(child: CircularProgressIndicator()),

@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -15,7 +14,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import '../components/chip_panel.dart';
 import '../components/screen.dart';
-import '../l10n/locale_keys.g.dart';
+import '../l10n/l10n.g.dart';
 import '../models/auth.dart';
 import '../models/credential.dart';
 import '../routes.dart';
@@ -27,7 +26,7 @@ class SignInPage extends Screen {
   const SignInPage({super.key}) : super(withForm: true);
 
   @override
-  String get title => LocaleKeys.signIn_title.tr();
+  String get title => l10n.signIn.title;
 
   @override
   Widget buildPage(BuildContext context, WidgetRef ref) {
@@ -40,29 +39,24 @@ class SignInPage extends Screen {
       children: [
         if (credential.hasError)
           ChipPanel.error(
-            plainText:
-                credential.error?.toString() ?? LocaleKeys.common_error.tr(),
+            plainText: credential.error?.toString() ?? l10n.common.error,
           ),
         if (auth.hasError)
           ChipPanel.error(
-            plainText: auth.error?.toString() ?? LocaleKeys.common_error.tr(),
+            plainText: auth.error?.toString() ?? l10n.common.error,
           ),
         ChipPanel.info(
           richTexts: [
-            TextSpan(
-              text: LocaleKeys.signIn_credentialDescriptionBeforeLink.tr(),
-            ),
-            TextSpan(
-              text: gitHubUrl,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.blue[700],
-                    decoration: TextDecoration.underline,
-                  ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () => unawaited(launchUrlString(gitHubUrl)),
-            ),
-            TextSpan(
-              text: LocaleKeys.signIn_credentialDescriptionAfterLink.tr(),
+            l10n.signIn.credentialDescription(
+              link: TextSpan(
+                text: gitHubUrl,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Colors.blue[700],
+                      decoration: TextDecoration.underline,
+                    ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => unawaited(launchUrlString(gitHubUrl)),
+              ),
             ),
           ],
         ),
@@ -71,17 +65,13 @@ class SignInPage extends Screen {
         state.fields.clientSecret(context),
         state.fields.doPersist(
           context,
-          title: Text(
-            LocaleKeys.formFields_doPersist_label.tr(),
-          ),
+          title: Text(l10n.formFields.doPersist.label),
         ),
         Padding(
           padding: EdgeInsets.all(8),
           child: FilledButton(
             onPressed: state.submit(context),
-            child: Text(
-              LocaleKeys.signIn_signInButtonLabel.tr(),
-            ),
+            child: Text(l10n.signIn.signInButtonLabel),
           ),
         ),
       ],

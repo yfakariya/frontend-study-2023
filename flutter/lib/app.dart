@@ -1,15 +1,14 @@
 // See LICENCE file in the root.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
-import 'l10n/codegen_loader.g.dart';
+import 'l10n/l10n.g.dart';
 import 'routes.dart';
 
-/// This is required to work
-/// [BuildContextEasyLocalizationExtension.localizationDelegates] correctly.
+/// This is required to work slang correctly.
 class _App extends ConsumerWidget {
   const _App();
 
@@ -20,10 +19,11 @@ class _App extends ConsumerWidget {
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       localizationsDelegates: [
-        ...context.localizationDelegates,
+        ...GlobalMaterialLocalizations.delegates,
         FormBuilderLocalizations.delegate,
       ],
-      supportedLocales: context.supportedLocales,
+      locale: TranslationProvider.of(context).flutterLocale,
+      supportedLocales: AppLocaleUtils.supportedLocales,
       routerConfig: router,
     );
   }
@@ -36,11 +36,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ProviderScope(
-        child: EasyLocalization(
-          supportedLocales: const [Locale('en'), Locale('ja')],
-          path: 'resources/langs',
-          fallbackLocale: const Locale('en'),
-          assetLoader: const CodegenLoader(),
+        child: TranslationProvider(
           child: const _App(),
         ),
       );

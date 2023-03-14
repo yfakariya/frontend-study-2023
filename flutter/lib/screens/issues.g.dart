@@ -20,7 +20,7 @@ final _issuesProvider = AutoDisposeFutureProvider<List<Issue>>.internal(
 );
 
 typedef _IssuesRef = AutoDisposeFutureProviderRef<List<Issue>>;
-String _$issuesPresenterHash() => r'77c0882a412143bbc0e5939c32460993b6f508c6';
+String _$issuesPresenterHash() => r'ddd14f676a58fa030208447c0e24d46310a719ac';
 
 /// See also [IssuesPresenter].
 @ProviderFor(IssuesPresenter)

@@ -12,9 +12,6 @@ import 'dart:ui'
 
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
-import 'package:easy_localization/easy_localization.dart'
-    show StringTranslateExtension;
-
 import 'package:flutter/foundation.dart' show Key, ValueChanged;
 
 import 'package:flutter/gestures.dart'
@@ -66,7 +63,7 @@ import 'package:form_companion_presenter/form_companion_presenter.dart';
 
 import 'package:meta/meta.dart' show immutable, sealed;
 
-import '../l10n/locale_keys.g.dart' show LocaleKeys;
+import '../l10n/l10n.g.dart' show l10n;
 
 import 'sign_in.dart';
 
@@ -329,8 +326,8 @@ class $SignInPresenterFieldFactory {
       readOnly: readOnly,
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_clientId_label.tr(),
-              hintText: LocaleKeys.formFields_clientId_hint.tr()),
+              labelText: l10n.formFields.clientId.label,
+              hintText: l10n.formFields.clientId.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,
@@ -448,8 +445,8 @@ class $SignInPresenterFieldFactory {
       readOnly: readOnly,
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_clientSecret_label.tr(),
-              hintText: LocaleKeys.formFields_clientSecret_hint.tr()),
+              labelText: l10n.formFields.clientSecret.label,
+              hintText: l10n.formFields.clientSecret.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,

@@ -12,9 +12,6 @@ import 'dart:ui'
 
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
-import 'package:easy_localization/easy_localization.dart'
-    show StringTranslateExtension;
-
 import 'package:flutter/foundation.dart' show Key, ValueChanged;
 
 import 'package:flutter/gestures.dart'
@@ -68,7 +65,7 @@ import 'package:form_companion_presenter/form_companion_presenter.dart';
 
 import 'package:meta/meta.dart' show immutable, sealed;
 
-import '../l10n/locale_keys.g.dart' show LocaleKeys;
+import '../l10n/l10n.g.dart' show l10n;
 
 import '../models/issues.dart' show IssueListSortKey, IssueState, ListDirection;
 
@@ -358,8 +355,8 @@ class $IssuesPresenterFieldFactory {
       readOnly: readOnly,
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_repository_label.tr(),
-              hintText: LocaleKeys.formFields_repository_hint.tr()),
+              labelText: l10n.formFields.repository.label,
+              hintText: l10n.formFields.repository.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,
@@ -453,8 +450,8 @@ class $IssuesPresenterFieldFactory {
       initialValue: property.getInitialValue(context),
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_sortKey_label.tr(),
-              hintText: LocaleKeys.formFields_sortKey_hint.tr()),
+              labelText: l10n.formFields.sortKey.label,
+              hintText: l10n.formFields.sortKey.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,
@@ -467,7 +464,8 @@ class $IssuesPresenterFieldFactory {
         IssueListSortKey.comments
       ]
           .map((x) => DropdownMenuItem<IssueListSortKey>(
-              value: x, child: Text('formFields.sortKey.${x.name}'.tr())))
+              value: x,
+              child: Text(l10n['formFields.sortKey.${x.name}'] as String)))
           .toList(),
       isExpanded: isExpanded,
       isDense: isDense,
@@ -533,8 +531,8 @@ class $IssuesPresenterFieldFactory {
       initialValue: property.getInitialValue(context),
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_issueState_label.tr(),
-              hintText: LocaleKeys.formFields_issueState_hint.tr()),
+              labelText: l10n.formFields.issueState.label,
+              hintText: l10n.formFields.issueState.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,
@@ -543,7 +541,8 @@ class $IssuesPresenterFieldFactory {
       focusNode: focusNode,
       items: [IssueState.open, IssueState.closed, IssueState.all]
           .map((x) => DropdownMenuItem<IssueState>(
-              value: x, child: Text('formFields.issueState.${x.name}'.tr())))
+              value: x,
+              child: Text(l10n['formFields.issueState.${x.name}'] as String)))
           .toList(),
       isExpanded: isExpanded,
       isDense: isDense,
@@ -609,8 +608,8 @@ class $IssuesPresenterFieldFactory {
       initialValue: property.getInitialValue(context),
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_direction_label.tr(),
-              hintText: LocaleKeys.formFields_direction_hint.tr()),
+              labelText: l10n.formFields.direction.label,
+              hintText: l10n.formFields.direction.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,
@@ -619,7 +618,8 @@ class $IssuesPresenterFieldFactory {
       focusNode: focusNode,
       items: [ListDirection.asc, ListDirection.desc]
           .map((x) => DropdownMenuItem<ListDirection>(
-              value: x, child: Text('formFields.direction.${x.name}'.tr())))
+              value: x,
+              child: Text(l10n['formFields.direction.${x.name}'] as String)))
           .toList(),
       isExpanded: isExpanded,
       isDense: isDense,
@@ -709,8 +709,8 @@ class $IssuesPresenterFieldFactory {
       readOnly: readOnly,
       decoration: decoration ??
           const InputDecoration().copyWith(
-              labelText: LocaleKeys.formFields_issuesPerPages_label.tr(),
-              hintText: LocaleKeys.formFields_issuesPerPages_hint.tr()),
+              labelText: l10n.formFields.issuesPerPages.label,
+              hintText: l10n.formFields.issuesPerPages.hint),
       onChanged: property.onChanged(context, onChanged),
       valueTransformer: valueTransformer,
       enabled: enabled,
