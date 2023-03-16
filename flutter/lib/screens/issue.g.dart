@@ -6,7 +6,7 @@ part of 'issue.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$issueHash() => r'db0522fc0acd56a1054b858ccaee425fcc0ff207';
+String _$issueHash() => r'5c494d6f9d741a5597f1ba8423d10167c90ee5be';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -209,7 +209,7 @@ class _InitializedWebViewProvider extends FutureProvider<WebView> {
   }
 }
 
-String _$loadedWebViewHash() => r'ef2873a714b5e824a38b4d1608065a2f70127261';
+String _$loadedWebViewHash() => r'63f54021d32a9a6e856c2beaa01effb6a48aade0';
 typedef _LoadedWebViewRef = AutoDisposeFutureProviderRef<WebView>;
 
 /// See also [_loadedWebView].

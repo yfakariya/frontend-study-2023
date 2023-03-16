@@ -6,7 +6,7 @@ part of 'issues.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$issuesHash() => r'74f9da907aaa13726372676ee2201be8f4b17599';
+String _$issuesHash() => r'ced3d68e54dad73ba04fc65ee5c9ae483a4d3fea';
 
 /// See also [_issues].
 @ProviderFor(_issues)

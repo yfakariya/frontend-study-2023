@@ -83,7 +83,10 @@ class SignInPage extends Screen {
 @riverpod
 class SignInPresenter extends _$SignInPresenter
     with CompanionPresenterMixin, FormBuilderCompanionMixin {
+  // Store notifiers to field to avoid ref usage beyond async boundary.
   late GoRouter _router;
+  late AuthTokenNotifier _authenticator;
+  late OAuthCredentialRepository _credentialRepository;
 
   SignInPresenter() {
     initializeCompanionMixin(
@@ -103,6 +106,9 @@ class SignInPresenter extends _$SignInPresenter
 
   @override
   $SignInPresenterFormProperties build() {
+    _authenticator = ref.read(authTokenNotifierProvider.notifier);
+    _credentialRepository =
+        ref.read(oAuthCredentialRepositoryProvider.notifier);
     _router = ref.watch(routerProvider);
     final loginState = ref.watch(oAuthCredentialRepositoryProvider);
     if (loginState.hasValue) {
@@ -124,13 +130,13 @@ class SignInPresenter extends _$SignInPresenter
       clientId: properties.values.clientId,
       clientSecret: properties.values.clientSecret,
     );
-    await ref.read(authTokenNotifierProvider.notifier).authenticate(credential);
+    await _authenticator.authenticate(credential);
 
     // This causes authentication in authTokenNotifier.
-    if (await ref.read(oAuthCredentialRepositoryProvider.notifier).store(
-          credential,
-          doPersist: properties.values.doPersist,
-        )) {
+    if (await _credentialRepository.store(
+      credential,
+      doPersist: properties.values.doPersist,
+    )) {
       _router.go(homeRoute);
     }
   }

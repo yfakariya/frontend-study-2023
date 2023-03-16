@@ -232,8 +232,14 @@ final _issuesConditionProvider =
     StateProvider<IssuesSearchCondition>((_) => const IssuesSearchCondition());
 
 @riverpod
-Future<List<Issue>> _issues(_IssuesRef ref) async => getIssues(
-      condition: ref.watch(_issuesConditionProvider),
-      page: ref.watch(_pageProvider),
-      token: await ref.watch(authTokenNotifierProvider.future),
-    );
+Future<List<Issue>> _issues(_IssuesRef ref) async {
+  final authToken = await ref.watch(authTokenNotifierProvider.future);
+
+  return authToken == null
+      ? []
+      : await getIssues(
+          condition: ref.watch(_issuesConditionProvider),
+          page: ref.watch(_pageProvider),
+          token: authToken,
+        );
+}

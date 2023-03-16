@@ -20,13 +20,15 @@ const loginRoute = '/$_login';
 
 @riverpod
 GoRouter router(RouterRef ref) {
+  // Watch outside of guardRoute to avoid access to disposed provider.
+  final authToken = ref.watch(authTokenNotifierProvider);
+
   String? guardRoute(
     BuildContext context,
     GoRouterState state,
   ) {
-    final authToken = ref.watch(authTokenNotifierProvider);
     // Go to login page if the user is not authenticated yet.
-    if (!authToken.hasValue) {
+    if (authToken.valueOrNull == null) {
       return loginRoute;
     }
 

@@ -186,13 +186,17 @@ FutureOr<Issue?> _issue(
   required String owner,
   required String repository,
   required String issueNumber,
-}) async =>
-    getIssue(
-      token: await ref.watch(authTokenNotifierProvider.future),
-      owner: owner,
-      repository: repository,
-      issueNumber: issueNumber,
-    );
+}) async {
+  final authToken = await ref.watch(authTokenNotifierProvider.future);
+  return authToken == null
+      ? null
+      : await getIssue(
+          token: authToken,
+          owner: owner,
+          repository: repository,
+          issueNumber: issueNumber,
+        );
+}
 
 @Riverpod(keepAlive: true)
 FutureOr<WebView> _initializedWebView(
@@ -222,7 +226,7 @@ FutureOr<WebView> _loadedWebView(
   final html = issue == null
       ? ''
       : await getIssueBodyHtml(
-          token: authToken,
+          token: authToken!,
           owner: owner,
           repository: repository,
           body: issue.body,

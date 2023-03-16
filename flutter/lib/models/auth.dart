@@ -39,20 +39,24 @@ String sanitizeDirString(String string) => string
     .trim()
     .replaceAll(_trimEndSanitaization, '');
 
+// Use StreamProvider if dependent data can be stored if and only if the user
+// input previously.
+
 /// Notifies [AuthTokens] change.
 @riverpod
 class AuthTokenNotifier extends _$AuthTokenNotifier {
   @override
-  FutureOr<AuthTokens> build() async {
+  Stream<AuthTokens?> build() async* {
+    yield null;
     final credential =
         await ref.watch(oAuthCredentialRepositoryProvider.future);
-    return await _authenticate(credential);
+    yield await _authenticate(credential);
   }
 
-  Future<AuthTokens> authenticate(OAuthCredential credential) =>
+  Future<AuthTokens?> authenticate(OAuthCredential credential) =>
       update((_) => _authenticate(credential));
 
-  Future<AuthTokens> _authenticate(OAuthCredential credential) async {
+  Future<AuthTokens?> _authenticate(OAuthCredential credential) async {
     final client = GitHubOAuth2Client(
       customUriScheme: _customUriScheme,
       redirectUri: _redirectUri,
