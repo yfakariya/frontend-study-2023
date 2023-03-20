@@ -1,0 +1,56 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31611.283
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubViewer", "GitHubViewer\GitHubViewer.csproj", "{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Core", "GitHubViewer.Core\GitHubViewer.Core.csproj", "{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Server", "GitHubViewer.Server\GitHubViewer.Server.csproj", "{24080C76-770A-4E08-BD34-BD3D5EDA2A52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Wasm.Server", "GitHubViewer.Wasm\Server\GitHubViewer.Wasm.Server.csproj", "{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Wasm.Client", "GitHubViewer.Wasm\Client\GitHubViewer.Wasm.Client.csproj", "{1ABF5CAF-6D32-487B-9600-22226AB1CF80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Wasm.Shared", "GitHubViewer.Wasm\Shared\GitHubViewer.Wasm.Shared.csproj", "{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24080C76-770A-4E08-BD34-BD3D5EDA2A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24080C76-770A-4E08-BD34-BD3D5EDA2A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24080C76-770A-4E08-BD34-BD3D5EDA2A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24080C76-770A-4E08-BD34-BD3D5EDA2A52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}
+	EndGlobalSection
+EndGlobal
