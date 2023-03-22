@@ -1,0 +1,14 @@
+@attribute [Route(Routes.Issues +"/{Owner}/{Repository}/{IssueNumber:int}" )]
+
+<h3>Issue</h3>
+
+@code {
+    [Parameter]
+    public string Owner { get; set; } = null!;
+
+    [Parameter]
+    public string Repository { get; set; } = null!;
+
+    [Parameter]
+    public int IssueNumber { get; set; }
+}

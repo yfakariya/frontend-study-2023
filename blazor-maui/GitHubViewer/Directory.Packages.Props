@@ -1,6 +1,7 @@
 <Project>
   <ItemGroup>
     <!-- Common -->
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.4" />
     <PackageVersion Include="MudBlazor" Version="6.2.0" />
     <!-- App -->
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
