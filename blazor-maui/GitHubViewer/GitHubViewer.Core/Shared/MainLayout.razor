@@ -1,7 +1,7 @@
 @inherits LayoutComponentBase
 
 <MudRTLProvider>
-    <MudThemeProvider />
+    <MudThemeProvider @ref="_themeProvider" @bind-IsDarkMode="_isDarkMode" />
     <MudDialogProvider />
     <MudSnackbarProvider />
 
@@ -22,9 +22,29 @@
 </MudRTLProvider>
 
 @code {
-    bool _isDrawerOpen = false;
+    private MudThemeProvider _themeProvider = null!;
+    private bool _isDarkMode;
 
-    void ToggleDrawer()
+    private bool _isDrawerOpen = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDarkMode = await _themeProvider.GetSystemPreference();
+            await _themeProvider.WatchSystemPreference(
+#pragma warning disable CS1998
+                async (isDarkmode) =>
+#pragma warning restore CS1998
+                {
+                    _isDarkMode = isDarkmode;
+                    StateHasChanged();
+                });
+            StateHasChanged();
+        }
+    }
+
+    private void ToggleDrawer()
     {
         _isDrawerOpen = !_isDrawerOpen;
     }
