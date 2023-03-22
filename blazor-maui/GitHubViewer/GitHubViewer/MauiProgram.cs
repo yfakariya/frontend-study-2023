@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
+using Microsoft.AspNetCore.Components.WebView.Maui;
+using MudBlazor.Services;
 using GitHubViewer.Data;
 
 namespace GitHubViewer;
@@ -21,6 +22,7 @@ public static class MauiProgram
 #endif
 
 		builder.Services.AddSingleton<WeatherForecastService>();
+		builder.Services.AddMudServices();
 
 		return builder.Build();
 	}
