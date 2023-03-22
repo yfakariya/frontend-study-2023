@@ -1,4 +1,21 @@
 <Project>
-	<ItemGroup>
-	</ItemGroup>
+  <ItemGroup>
+
+    <!-- Common -->
+    <PackageVersion Include="MudBlazor" Version="6.2.0" />
+
+    <!-- .Core -->
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
+
+    <!-- .Server -->
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
+
+    <!-- .Wasm.Client -->
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.15" PrivateAssets="all" />
+
+    <!-- .Wasm.Server -->
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.15" />
+
+  </ItemGroup>
 </Project>

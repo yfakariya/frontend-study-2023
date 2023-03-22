@@ -1,18 +1,24 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubViewer", "GitHubViewer\GitHubViewer.csproj", "{F4038A13-B6DC-40C2-8991-A1A8D1404CE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Core", "GitHubViewer.Core\GitHubViewer.Core.csproj", "{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubViewer.Core", "GitHubViewer.Core\GitHubViewer.Core.csproj", "{1CA2B390-27DB-4AA5-BB3E-FCB8012E729F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Server", "GitHubViewer.Server\GitHubViewer.Server.csproj", "{24080C76-770A-4E08-BD34-BD3D5EDA2A52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubViewer.Server", "GitHubViewer.Server\GitHubViewer.Server.csproj", "{24080C76-770A-4E08-BD34-BD3D5EDA2A52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Wasm.Server", "GitHubViewer.Wasm\Server\GitHubViewer.Wasm.Server.csproj", "{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubViewer.Wasm.Server", "GitHubViewer.Wasm\Server\GitHubViewer.Wasm.Server.csproj", "{80D85F86-1D1E-41E8-AE80-C2BF1AA71826}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Wasm.Client", "GitHubViewer.Wasm\Client\GitHubViewer.Wasm.Client.csproj", "{1ABF5CAF-6D32-487B-9600-22226AB1CF80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubViewer.Wasm.Client", "GitHubViewer.Wasm\Client\GitHubViewer.Wasm.Client.csproj", "{1ABF5CAF-6D32-487B-9600-22226AB1CF80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubViewer.Wasm.Shared", "GitHubViewer.Wasm\Shared\GitHubViewer.Wasm.Shared.csproj", "{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevelopmentSettings", "DevelopmentSettings", "{A0B1D109-C279-4915-BD93-421F9ED35C05}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.Props = Directory.Build.Props
+		Directory.Packages.Props = Directory.Packages.Props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,10 +48,6 @@ Global
 		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ABF5CAF-6D32-487B-9600-22226AB1CF80}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEE30546-CA44-456E-86AE-8EA3CCC76FFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
