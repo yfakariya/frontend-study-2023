@@ -1,4 +1,5 @@
-using GitHubViewer.Wasm.Shared;
+using GitHubViewer.Data;
+using GitHubViewer.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GitHubViewer.Wasm.Server.Controllers

@@ -1,4 +1,4 @@
-using GitHubViewer.Server.Data;
+using GitHubViewer.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
