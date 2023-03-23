@@ -26,6 +26,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	private readonly GitHubUserProfile _userProfile;
 	private readonly GitHubTokenInformation _tokenInformation;
 	private readonly CredentialsRepository _credentialStore;
+	private readonly IdentityModel.OidcClient.Browser.IBrowser _browser;
 	private readonly IOptions<GitHubOptions> _options;
 	private readonly IHttpClientFactory _httpClientFactory;
 	private readonly ILoggerFactory _loggerFactory;
@@ -38,6 +39,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		GitHubUserProfile userProfile,
 		GitHubTokenInformation tokenInformation,
 		CredentialsRepository credentialStore,
+		IdentityModel.OidcClient.Browser.IBrowser browser,
 		IHttpClientFactory httpClientFactory,
 		ILoggerFactory loggerFactory,
 		IOptions<GitHubOptions> options
@@ -46,6 +48,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		_userProfile = userProfile;
 		_tokenInformation = tokenInformation;
 		_credentialStore = credentialStore;
+		_browser = browser;
 		_httpClientFactory = httpClientFactory;
 		_loggerFactory = loggerFactory;
 		_options = options;
@@ -86,7 +89,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 						ClientSecret = clientSecret,
 						Scope = String.Empty,
 						RedirectUri = Uris.CallbackUriString,
-						Browser = new MauiAuthenticationBrowser(),
+						Browser = _browser,
 						HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),
 						LoggerFactory = _loggerFactory,
 						ProviderInformation = GetGitHubProviderInformation(authorityAndIssuer),

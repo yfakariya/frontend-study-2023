@@ -27,5 +27,6 @@ internal interface IUriInterceptor
 		int port,
 		string path,
 		Func<Uri, MessageAndHttpCode> responseProducer,
-		CancellationToken cancellationToken);
+		CancellationToken cancellationToken
+	);
 }
