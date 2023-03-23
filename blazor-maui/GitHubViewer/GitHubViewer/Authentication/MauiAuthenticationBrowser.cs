@@ -9,6 +9,7 @@ using IdentityModel.Client;
 using IdentityModel.OidcClient.Browser;
 
 namespace GitHubViewer.Authentication;
+
 internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser
 {
 #pragma warning disable IDE0060
