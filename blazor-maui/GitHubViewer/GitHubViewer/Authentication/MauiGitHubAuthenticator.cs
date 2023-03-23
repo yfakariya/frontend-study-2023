@@ -56,7 +56,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 
 	public async ValueTask<ClaimsPrincipal> SignInAutomaticallyAsync(CancellationToken cancellationToken = default)
 	{
-		var credentials = await _credentialStore.GetCredentialsAsync(cancellationToken);
+		var credentials = await _credentialStore.GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
 		ClaimsPrincipal user;
 		if (credentials == null)
 		{
@@ -64,8 +64,8 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		}
 		else
 		{
-			var scopes = await _tokenInformation.GetScopesAsync(credentials);
-			user = await _userProfile.GetAuthenticatedUserAsync(scopes);
+			var scopes = await _tokenInformation.GetScopesAsync(credentials).ConfigureAwait(false);
+			user = await _userProfile.GetAuthenticatedUserAsync(scopes).ConfigureAwait(false);
 		}
 
 		OnUserChanged(user);
@@ -75,7 +75,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 
 	public async ValueTask<ClaimsPrincipal> SignInAsync(string clientId, string clientSecret, bool persists, CancellationToken cancellationToken = default)
 	{
-		var credentials = await _credentialStore.GetCredentialsAsync(cancellationToken);
+		var credentials = await _credentialStore.GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
 
 		if (credentials == null || credentials.ClientId != clientId)
 		{
@@ -103,25 +103,25 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 					}
 				);
 
-			var result = await oidcClient.LoginAsync(cancellationToken: cancellationToken);
+			var result = await oidcClient.LoginAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 			if (result.IsError)
 			{
 				ThrowAuthenticationException(result);
 			}
 
 			credentials = new OAuth2Credentials(clientId, result.AccessToken);
-			await _credentialStore.SetCredentialsAsync(credentials, persists: persists, cancellationToken: cancellationToken);
+			await _credentialStore.SetCredentialsAsync(credentials, persists: persists, cancellationToken: cancellationToken).ConfigureAwait(false);
 		}
 
-		var scopes = await _tokenInformation.GetScopesAsync(credentials);
-		var user = await _userProfile.GetAuthenticatedUserAsync(scopes);
+		var scopes = await _tokenInformation.GetScopesAsync(credentials).ConfigureAwait(false);
+		var user = await _userProfile.GetAuthenticatedUserAsync(scopes).ConfigureAwait(false);
 		OnUserChanged(user);
 		return user;
 	}
 
 	public async ValueTask SignOutAsync(CancellationToken cancellationToken = default)
 	{
-		await _credentialStore.ClearCredentialsAsync(cancellationToken);
+		await _credentialStore.ClearCredentialsAsync(cancellationToken).ConfigureAwait(false);
 		OnUserChanged(ClaimsPrincipals.Anonymous);
 	}
 

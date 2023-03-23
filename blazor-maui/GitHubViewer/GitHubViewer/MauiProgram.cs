@@ -2,12 +2,13 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-using System.Runtime.InteropServices;
 using GitHubViewer.Authentication;
 using GitHubViewer.Infrastructure;
 using Microsoft.AspNetCore.Components.Authorization;
+#if WINDOWS
 using Microsoft.Identity.Client.Platforms.Shared.DefaultOSBrowser;
 using Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
+#endif // WINDOWS
 using Octokit;
 
 namespace GitHubViewer;
@@ -36,19 +37,15 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IGitHubAuthenticator, MauiGitHubAuthenticator>();
 		builder.Services.AddSingleton<AuthenticationStateProvider, GitHubAuthenticationStateProvider>();
 
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-		{
-			// Due to WindowsAppSDK issue (https://github.com/microsoft/WindowsAppSDK/issues/441),
-			// we cannot use WebAuthentication in Windows, so we use HttpListener based oauth2 authentication, borrowed from MSAL.NET.
-			builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, HttpListenerAuthenticationBrowser>();
-		}
-		else
-		{
-			builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, MauiAuthenticationBrowser>();
-		}
-
+#if WINDOWS
+		// Due to WindowsAppSDK issue (https://github.com/microsoft/WindowsAppSDK/issues/441),
+		// we cannot use WebAuthentication in Windows, so we use HttpListener based oauth2 authentication, borrowed from MSAL.NET.
+		builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, HttpListenerAuthenticationBrowser>();
 		builder.Services.AddSingleton<IUriInterceptor, HttpListenerInterceptor>();
 		builder.Services.AddSingleton<IDefaultOSBrowser, WindowsDefaultOSBrowser>();
+#else
+		builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, MauiAuthenticationBrowser>();
+#endif // WINDOWS
 
 		return builder.Build();
 	}

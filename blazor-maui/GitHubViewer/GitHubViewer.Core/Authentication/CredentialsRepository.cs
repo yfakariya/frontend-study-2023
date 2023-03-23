@@ -18,7 +18,7 @@ public abstract class CredentialsRepository : ICredentialStore
 			return inMemory;
 		}
 
-		inMemory = await LoadCredentialsAsync(cancellationToken);
+		inMemory = await LoadCredentialsAsync(cancellationToken).ConfigureAwait(false);
 		_inMemory = inMemory;
 		return inMemory;
 	}
@@ -29,7 +29,7 @@ public abstract class CredentialsRepository : ICredentialStore
 	{
 		if (persists)
 		{
-			await SaveCredentialsAsync(credentials, cancellationToken);
+			await SaveCredentialsAsync(credentials, cancellationToken).ConfigureAwait(false);
 		}
 		_inMemory = credentials;
 	}
@@ -38,7 +38,7 @@ public abstract class CredentialsRepository : ICredentialStore
 
 	public async ValueTask ClearCredentialsAsync(CancellationToken cancellationToken = default)
 	{
-		await ClearPersistedCredentialsAsync(cancellationToken);
+		await ClearPersistedCredentialsAsync(cancellationToken).ConfigureAwait(false);
 		_inMemory = null;
 	}
 
@@ -46,14 +46,10 @@ public abstract class CredentialsRepository : ICredentialStore
 
 	async Task<Credentials> ICredentialStore.GetCredentials()
 	{
-		var underlying = await GetCredentialsAsync();
-		if (underlying == null)
-		{
-			return Credentials.Anonymous;
-		}
-		else
-		{
-			return new Credentials(underlying.AccessToken, AuthenticationType.Oauth);
-		}
+		var underlying = await GetCredentialsAsync().ConfigureAwait(false);
+		return
+			underlying == null
+			? Credentials.Anonymous
+			: new Credentials(underlying.AccessToken, AuthenticationType.Oauth);
 	}
 }

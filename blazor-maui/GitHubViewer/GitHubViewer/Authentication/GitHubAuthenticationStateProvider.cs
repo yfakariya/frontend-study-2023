@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace GitHubViewer.Authentication;
 
-public class GitHubAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
+internal sealed class GitHubAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
 {
 	private readonly IGitHubAuthenticator _authenticator;
 
@@ -32,7 +32,7 @@ public class GitHubAuthenticationStateProvider : AuthenticationStateProvider, ID
 
 	public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 	{
-		Current = new AuthenticationState(await _authenticator.SignInAutomaticallyAsync());
+		Current = new AuthenticationState(await _authenticator.SignInAutomaticallyAsync().ConfigureAwait(false));
 		return Current;
 	}
 }

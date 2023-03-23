@@ -4,11 +4,9 @@
 
 namespace GitHubViewer.Infrastructure
 {
-	internal class MauiBrowserLauncher : IBrowserLauncher
+	internal sealed class MauiBrowserLauncher : IBrowserLauncher
 	{
 		public async ValueTask OpenAsync(string uri, CancellationToken cancellationToken = default)
-		{
-			await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
-		}
+			=> await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred).ConfigureAwait(false);
 	}
 }

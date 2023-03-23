@@ -87,18 +87,18 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 	internal /* internal for testing only */ MessageAndHttpCode GetResponseMessage(Uri authCodeUri)
 	{
 		// Parse the uri to understand if an error was returned. This is done just to show the user a nice error message in the browser.
-		var authorizationResult = GetErrorFromUri(authCodeUri);
+		var (error, errorDescription) = GetErrorFromUri(authCodeUri);
 
-		if (!String.IsNullOrEmpty(authorizationResult.Error))
+		if (!String.IsNullOrEmpty(error))
 		{
-			_logger.ErrorIsIntercepted(authorizationResult.Error, authorizationResult.ErrorDescription);
+			_logger.ErrorIsIntercepted(error, errorDescription);
 
 			var errorMessage =
 				String.Format(
 					CultureInfo.InvariantCulture,
 					DefaultFailureHtml,
-					authorizationResult.Error,
-					authorizationResult.ErrorDescription
+					error,
+					errorDescription
 				);
 
 			return new MessageAndHttpCode(HttpStatusCode.OK, errorMessage);

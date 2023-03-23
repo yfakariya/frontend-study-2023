@@ -7,7 +7,9 @@ using Foundation;
 namespace GitHubViewer;
 
 [Register("AppDelegate")]
+#pragma warning disable CA1711
 public class AppDelegate : MauiUIApplicationDelegate
+#pragma warning restore CA1711
 {
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 

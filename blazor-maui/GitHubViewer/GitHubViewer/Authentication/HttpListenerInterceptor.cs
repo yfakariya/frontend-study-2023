@@ -15,7 +15,7 @@ using Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
 
 namespace Microsoft.Identity.Client.Platforms.Shared.DefaultOSBrowser;
 
-internal class HttpListenerInterceptor : IUriInterceptor
+internal sealed class HttpListenerInterceptor : IUriInterceptor
 {
 	private readonly ILogger _logger;
 
@@ -64,14 +64,12 @@ internal class HttpListenerInterceptor : IUriInterceptor
 		OnBeforeTopLevelCall();
 		cancellationToken.ThrowIfCancellationRequested();
 
-		if (String.IsNullOrEmpty(path))
-		{
-			path = "/";
-		}
-		else
-		{
-			path = path.StartsWith("/", StringComparison.Ordinal) ? path : "/" + path;
-		}
+		path =
+			String.IsNullOrEmpty(path)
+			? "/"
+			: path.StartsWith("/", StringComparison.Ordinal)
+			? path
+			: "/" + path;
 
 		var urlToListenTo = "http://127.0.0.1:" + port + path;
 
@@ -104,7 +102,7 @@ internal class HttpListenerInterceptor : IUriInterceptor
 
 				cancellationToken.ThrowIfCancellationRequested();
 
-				await RespondAsync(responseProducer, context, cancellationToken);
+				await RespondAsync(responseProducer, context, cancellationToken).ConfigureAwait(false);
 				_logger.ListenerReceivedMessage(urlToListenTo);
 
 				// the request URL should now contain the auth code and pkce
@@ -155,7 +153,7 @@ internal class HttpListenerInterceptor : IUriInterceptor
 		CancellationToken cancellationToken
 	)
 	{
-		MessageAndHttpCode messageAndCode = responseProducer(context.Request.Url!);
+		var messageAndCode = responseProducer(context.Request.Url!);
 		_logger.ProcessingResponseToBrowser(messageAndCode.HttpCode);
 
 		try
@@ -170,7 +168,7 @@ internal class HttpListenerInterceptor : IUriInterceptor
 				}
 				case HttpStatusCode.OK:
 				{
-					byte[] buffer = Encoding.UTF8.GetBytes(messageAndCode.Message);
+					var buffer = Encoding.UTF8.GetBytes(messageAndCode.Message);
 					context.Response.ContentLength64 = buffer.Length;
 					await context.Response.OutputStream.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
 					break;

@@ -16,5 +16,5 @@ public class GitHubTokenInformation
 	}
 
 	public async Task<IReadOnlyList<string>> GetScopesAsync(OAuth2Credentials credentials)
-		=> (await _authorizationsClient.CheckApplicationAuthentication(credentials.ClientId, credentials.AccessToken)).Scopes;
+		=> (await _authorizationsClient.CheckApplicationAuthentication(credentials.ClientId, credentials.AccessToken).ConfigureAwait(false)).Scopes;
 }

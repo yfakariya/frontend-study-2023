@@ -5,7 +5,9 @@
 // Based on MDAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/src/client/Microsoft.Identity.Client/Platforms/Features/DefaultOSBrowser/IUriInterceptor.cs
 // MIT license (https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/LICENSE)
 
+#pragma warning disable CA1716
 namespace Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
+#pragma warning restore CA1716
 
 /// <summary>
 /// An abstraction over objects that are able to listen to localhost url (e.g. http://localhost:1234)

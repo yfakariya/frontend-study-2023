@@ -10,7 +10,7 @@ public class MauiSecureStorageCredentialsRepository : CredentialsRepository
 {
 	protected override async ValueTask<OAuth2Credentials?> LoadCredentialsAsync(CancellationToken cancellationToken)
 	{
-		var json = await SecureStorage.Default.GetAsync(SecureStorageKeys.Credential);
+		var json = await SecureStorage.Default.GetAsync(SecureStorageKeys.Credential).ConfigureAwait(false);
 		if (String.IsNullOrEmpty(json))
 		{
 			return null;
@@ -32,8 +32,7 @@ public class MauiSecureStorageCredentialsRepository : CredentialsRepository
 	}
 
 	protected override async ValueTask SaveCredentialsAsync(OAuth2Credentials credentials, CancellationToken cancellationToken)
-	{
-		await SecureStorage.Default.SetAsync(
+		=> await SecureStorage.Default.SetAsync(
 			SecureStorageKeys.Credential,
 			JsonSerializer.Serialize(
 				new Dictionary<string, string>(capacity: 2)
@@ -42,8 +41,7 @@ public class MauiSecureStorageCredentialsRepository : CredentialsRepository
 					["accessToken"] = credentials.AccessToken,
 				}
 			)
-		);
-	}
+		).ConfigureAwait(false);
 
 	protected override ValueTask ClearPersistedCredentialsAsync(CancellationToken cancellationToken)
 	{

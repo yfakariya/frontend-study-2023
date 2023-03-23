@@ -7,6 +7,8 @@
 
 using System.Net;
 
+#pragma warning disable CA1716
 namespace Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
+#pragma warning restore CA1716
 
 public record struct MessageAndHttpCode(HttpStatusCode HttpCode, string Message);

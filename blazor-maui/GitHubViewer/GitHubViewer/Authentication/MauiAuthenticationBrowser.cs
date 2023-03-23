@@ -12,9 +12,7 @@ namespace GitHubViewer.Authentication;
 
 internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser
 {
-#pragma warning disable IDE0060
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
-#pragma warning restore IDE0060
 	{
 		try
 		{
@@ -26,7 +24,7 @@ internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Brows
 						CallbackUrl = new Uri(options.EndUrl),
 						PrefersEphemeralWebBrowserSession = true,
 					}
-				);
+				).ConfigureAwait(false);
 
 			var url =
 				new RequestUrl(Uris.CallbackUriString)

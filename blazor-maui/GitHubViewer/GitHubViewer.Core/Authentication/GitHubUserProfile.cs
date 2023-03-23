@@ -20,7 +20,7 @@ public class GitHubUserProfile
 
 	public async Task<ClaimsPrincipal> GetAuthenticatedUserAsync(IReadOnlyCollection<string> scopes)
 	{
-		var currentUser = await _usersClient.Current();
+		var currentUser = await _usersClient.Current().ConfigureAwait(false);
 		if (currentUser == null)
 		{
 			return ClaimsPrincipals.Anonymous;
