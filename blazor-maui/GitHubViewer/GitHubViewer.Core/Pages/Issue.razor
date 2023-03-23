@@ -1,4 +1,5 @@
 @attribute [Route(Routes.Issues +"/{Owner}/{Repository}/{IssueNumber:int}" )]
+@attribute [Authorize]
 
 <h3>Issue</h3>
 

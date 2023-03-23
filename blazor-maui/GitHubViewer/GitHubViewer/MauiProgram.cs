@@ -2,9 +2,10 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-using Microsoft.AspNetCore.Components.WebView.Maui;
-using MudBlazor.Services;
-using GitHubViewer.Data;
+using GitHubViewer.Authentication;
+using GitHubViewer.Infrastructure;
+using Microsoft.AspNetCore.Components.Authorization;
+using Octokit;
 
 namespace GitHubViewer;
 
@@ -24,13 +25,12 @@ public static class MauiProgram
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-
-		builder.Services.AddOptions();
-		builder.Services.AddAuthorizationCore();
-
-		builder.Services.AddSingleton<WeatherForecastService>();
-
-		builder.Services.AddMudServices();
+		ApplicationSetUp.RegisterServices(builder.Services, useScoped: false);
+		builder.Services.AddSingleton<ICredentialStore, MauiSecureStorageCredentialsRepository>();
+		builder.Services.AddSingleton<CredentialsRepository, MauiSecureStorageCredentialsRepository>();
+		builder.Services.AddSingleton<IGitHubAuthenticator, MauiGitHubAuthenticator>();
+		builder.Services.AddSingleton<AuthenticationStateProvider, GitHubAuthenticationStateProvider>();
+		builder.Services.AddSingleton<IBrowserLauncher, MauiBrowserLauncher>();
 
 		return builder.Build();
 	}

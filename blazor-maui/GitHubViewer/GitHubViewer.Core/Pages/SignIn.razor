@@ -1,5 +1,75 @@
+@using System.Globalization
+@using GitHubViewer.Authentication;
+@using GitHubViewer.Infrastructure;
 @attribute [Route(Routes.SignIn)]
+@inject IBrowserLauncher BrowserLauncher
+@inject IGitHubAuthenticator Authenticator
+@inject ILogger<SignIn> Logger
+@inject NavigationManager Navigation
+
+<MudStack>
+    @if (!String.IsNullOrEmpty(Error))
+    {
+        <ErrorPanel>
+            <MudText>@Error</MudText>
+        </ErrorPanel>
+    }
+    <InfoPanel>
+        @* TODO: L10N *@
+        <MudText>
+            Input GitHub client ID and client secret which you registered. See
+            <MudLink OnClick="@ClickGitHubLink">
+                @GitHubLink
+            </MudLink>
+            for details.
+        </MudText>
+    </InfoPanel>
+
+    @* TODO: L10N *@
+    <MudTextField @bind-Value="ClientId" Label="Client ID" Placeholder="Client ID configured in your GitHub account setting for this app." />
+    @* TODO: L10N *@
+    <MudTextField @bind-Value="ClientSecret" Label="Client Secret" InputType="@InputType.Password" Placeholder="Client Secret configured in your GitHub account setting for this app." />
+    @* TODO: L10N *@
+    <MudCheckBox @bind-Checked="Persists" Label="Persists these values" />
+    @* TODO: L10N *@
+    <MudContainer MaxWidth="MaxWidth.False" Class="d-flex justify-end pe-0">
+        <MudButton OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Sign in</MudButton>
+    </MudContainer>
+
+</MudStack>
 
 @code {
+    public string GitHubLink
+        => $"https://docs.github.com/{CultureInfo.CurrentUICulture.Parent.Name}/developers/apps/building-oauth-apps/creating-an-oauth-app";
+    public string? Error { get; set; }
+    public string ClientId { get; set; } = null!;
+    public string ClientSecret { get; set; } = null!;
+    public bool Persists { get; set; }
 
+    public async Task ClickGitHubLink()
+    {
+        try
+        {
+            await BrowserLauncher.OpenAsync(GitHubLink);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            Logger.LogError(ex, "Failed to launch browser.");
+        }
+    }
+
+    public async Task Submit()
+    {
+        try
+        {
+            await Authenticator.SignInAsync(ClientId, ClientSecret, Persists);
+            Navigation.NavigateTo(Routes.Home, forceLoad: false, replace: true);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            Logger.LogError(ex, "Failed to sign-in.");
+        }
+    }
 }

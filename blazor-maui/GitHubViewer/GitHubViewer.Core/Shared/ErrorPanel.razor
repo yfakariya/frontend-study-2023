@@ -1,0 +1,11 @@
+<MudPaper Class="ma-4 pa-4 rounded" Style="@($"color: {Colors.Red.Darken2}; background: {Colors.Red.Lighten5};")">
+    <MudStack Row="true">
+        <MudIcon Icon="@Icons.Material.Filled.Error" Style="@($"color: {Colors.Red.Darken3};")" />
+        @ChildContent
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+}
