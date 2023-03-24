@@ -3,7 +3,6 @@
 // See the LICENSE in the project root for more information.
 
 using GitHubViewer.Authentication;
-using GitHubViewer.Data;
 using GitHubViewer.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -51,8 +50,6 @@ public static class ApplicationSetUp
 			services.AddSingleton<GitHubUserProfile>();
 			services.AddSingleton<GitHubTokenInformation>();
 		}
-
-		services.AddSingleton<WeatherForecastService>();
 
 		services.AddMudServices();
 	}
