@@ -5,9 +5,9 @@
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="7.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageVersion Include="MudBlazor" Version="6.2.0" />
+    <PackageVersion Include="Octokit" Version="5.0.2" />
     <!-- App -->
     <PackageVersion Include="IdentityModel.OidcClient" Version="5.2.1" />
-    <PackageVersion Include="Octokit" Version="5.0.2" />
     <PackageVersion Include="Xamarin.Essentials" Version="1.7.5" />
     <!-- .Core -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.4" />

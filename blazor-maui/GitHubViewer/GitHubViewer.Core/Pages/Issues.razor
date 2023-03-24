@@ -1,6 +1,225 @@
+@using System.ComponentModel.DataAnnotations;
+@using GitHubViewer.Issues;
+@using Octokit;
 @attribute [Route(Routes.Issues)]
 @attribute [Authorize]
 
+@inject ILogger<Issues> Logger
+@inject IStringLocalizer<Issues> L
+@inject IssueRepository Repository
+@inject NavigationManager Navigation
+
+<MudPaper Class="pa-4">
+    <MudStack AlignItems="AlignItems.Stretch">
+        <MudExpansionPanels>
+            <MudExpansionPanel Text="Search Condition">
+                <EditForm Model="Model" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+                    <DataAnnotationsValidator />
+
+                    <MudCard>
+                        <MudCardContent>
+                            @if (IsInvalid)
+                            {
+                                <ErrorPanel Class="mb-4">
+                                    <MudStack>
+                                        @L["ValidationErrorHeader"]
+                                        <ValidationSummary />
+                                    </MudStack>
+                                </ErrorPanel>
+                            }
+                            @* TODO(yfakariya): labels, milestone *@
+                            @* TODO(yfakariya): searchable dropdown *@
+                            <MudTextField @bind-Value="Model.Repository" Label="Repository (optional)" HelperText="Target repository name with \'user/repo\' format to be searched." />
+                            <MudSelect @bind-Value="Model.State" Label="Issue state" HelperText="Select issue state to be shown. Default is 'Open'.">
+                                <MudSelectItem Value="@ItemStateFilter.Open" />
+                                <MudSelectItem Value="@ItemStateFilter.Closed" />
+                                <MudSelectItem Value="@ItemStateFilter.All" />
+                            </MudSelect>
+                            @* TODO(yfakaria): re-enable after nulalble support *@
+
+                            <MudDatePicker @bind-Value="Model.Since" Label="Since (optional)" HelperText="Specify oldest date and time of issues to be shown." />
+
+                            <MudSelect @bind-Value="Model.SortProperty" Label="Sort key" HelperText="Select sort key of issues. Default is 'Created date/time'.">
+                                <MudSelectItem Value="@IssueSort.Created" />
+                                <MudSelectItem Value="@IssueSort.Updated" />
+                                <MudSelectItem Value="@IssueSort.Comments" />
+                            </MudSelect>
+
+                            <MudSelect @bind-Value="Model.SortDirection" Label="List direction" HelperText="Select direction of issues list which ordered by sort key. Default is 'Descending'.">
+                                <MudSelectItem Value="@Octokit.SortDirection.Ascending" />
+                                <MudSelectItem Value="@Octokit.SortDirection.Descending" />
+                            </MudSelect>
+
+                            @*state.fields.issuesPerPages(context),*@
+                            <MudNumericField HideSpinButtons="true" Min="1" Max="100" @bind-Value="Model.IssuesPerPage" Label="Issues per pages" HintText="Maximum issues shown in a page. Default is 20." />
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SearchButton"]</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </EditForm>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+        <MudText>@SearchResultSummary</MudText>
+
+        @if (!String.IsNullOrEmpty(Error))
+        {
+            <ErrorPanel>
+                <MudText>@Error</MudText>
+            </ErrorPanel>
+        }
+        else if (IsLoading)
+        {
+            <MudProgressCircular />
+        }
+        else if (SearchedIssues.Count == 0)
+        {
+            <MudText Class="align-self-center">@L["EmptyResult"]</MudText>
+        }
+        else
+        {
+            @* TODO: dynamic height *@
+            <MudList Clickable="true" @bind-SelectedItem:get="SelectedIssueListItem" @bind-SelectedItem:set="SetSelectedIssueListItem">
+                <MudVirtualize Items="@SearchedIssues">
+                    <MudListItem @key="context.Id">
+                        <MudStack>
+                            <MudText Typo="Typo.h5">@context.Title</MudText>
+                            <MudText Typo="Typo.subtitle1">#@context.Number at @(context.Repository.FullName), created: @(context.CreatedAt), updated: @(context.UpdatedAt)</MudText>
+                            </MudStack>
+                        </MudListItem>
+                    </MudVirtualize>
+                </MudList>
+        }
+
+        @* TODO: Page *@
+    </MudStack>
+</MudPaper>
+
+
 @code {
 
+    string? Error { get; set; }
+
+    ViewModel Model { get; set; } = new ViewModel();
+
+    bool IsInvalid { get; set; } = false;
+
+    bool IsLoading { get; set; } = false;
+
+    string SearchResultSummary { get; set; } = String.Empty; // Search Result (${count} items)
+
+    IList<Octokit.Issue> SearchedIssues { get; set; } = Array.Empty<Octokit.Issue>();
+
+    MudListItem? SelectedIssueListItem { get; set; }
+
+    int Page { get; set; } = 1;
+
+    void OnInvalidSubmit()
+    {
+        IsInvalid = true;
+    }
+
+    async Task OnValidSubmit()
+    {
+        IsInvalid = false;
+        try
+        {
+            IsLoading = true;
+
+            var repositoryTokens = Model.Repository.Trim().Split('/');
+
+            SearchedIssues =
+                (await Repository.GetIssuesAsync(
+                    new IssueSearchCondition
+                        {
+                            IssuesPerPage = Model.IssuesPerPage,
+                            Owner = repositoryTokens.Length == 2 ? repositoryTokens[0] : null,
+                            Repository = repositoryTokens.Length == 2 ? repositoryTokens[1] : null,
+                            Since = Model.Since,
+                            SortDirection = Model.SortDirection,
+                            SortProperty = Model.SortProperty,
+                            State = Model.State
+                        },
+                    Page
+                )).ToArray();
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            Logger.LogError(ex, "Failed to sign-in.");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    void SetSelectedIssueListItem(MudListItem? selectedIssue)
+    {
+        var issue = selectedIssue?.Value as Octokit.Issue;
+        SelectedIssueListItem = null;
+
+        if (issue != null)
+        {
+            Navigation.NavigateTo($"{Routes.Issues}/{issue.Repository.FullName}/{issue.Number}?title={Uri.EscapeDataString(issue.Title)}");
+        }
+    }
+
+    class ViewModel
+    {
+        [RegularExpression(
+            @"^\s*([^\s/]+/[^\s/]+)?\s*$",
+            ErrorMessageResourceType = typeof(Issues_Display),
+            ErrorMessageResourceName = nameof(Repository)
+        )]
+        [Display(
+            ResourceType = typeof(Issues_Display),
+            Name = $"{nameof(Repository)}_Name",
+            Description = $"{nameof(Repository)}_Description"
+        )]
+        public string Repository { get; set; } = String.Empty;
+
+        [Range(
+            1, 100,
+            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceName = nameof(RangeAttribute)
+        )]
+        [Display(
+            ResourceType = typeof(Issues_Display),
+            Name = $"{nameof(IssuesPerPage)}_Name",
+            Description = $"{nameof(IssuesPerPage)}_Description"
+        )]
+        public int? IssuesPerPage { get; set; } = 20;
+
+        [Display(
+            ResourceType = typeof(Issues_Display),
+            Name = $"{nameof(State)}_Name",
+            Description = $"{nameof(State)}_Description"
+        )]
+        public ItemStateFilter State { get; set; } = ItemStateFilter.Open;
+
+        [Display(
+            ResourceType = typeof(Issues_Display),
+            Name = $"{nameof(SortDirection)}_Name",
+            Description = $"{nameof(SortDirection)}_Description"
+        )]
+        public Octokit.SortDirection SortDirection { get; set; } = Octokit.SortDirection.Descending;
+
+        [Display(
+            ResourceType = typeof(Issues_Display),
+            Name = $"{nameof(SortProperty)}_Name",
+            Description = $"{nameof(SortProperty)}_Description"
+        )]
+        public IssueSort SortProperty { get; set; } = IssueSort.Created;
+
+        [Display(
+           ResourceType = typeof(Issues_Display),
+           Name = $"{nameof(Since)}_Name",
+           Description = $"{nameof(Since)}_Description"
+       )]
+        public DateTimeOffset? Since { get; set; }
+
+        public IReadOnlyList<string> Labels { get; set; } = Array.Empty<string>();
+    }
 }
