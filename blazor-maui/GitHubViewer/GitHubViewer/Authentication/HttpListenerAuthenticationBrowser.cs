@@ -18,26 +18,6 @@ namespace GitHubViewer.Authentication;
 
 internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser, IOAuthHelper
 {
-	private const string DefaultSuccessHtml = """
-<html>
-  <head><title>Authentication Complete</title></head>
-  <body>
-    Authentication complete. You can return to the application. Feel free to close this browser tab.
-  </body>
-</html>
-""";
-
-	private const string DefaultFailureHtml = """
-<html>
-  <head><title>Authentication Failed</title></head>
-  <body>
-    Authentication failed. You can return to the application. Feel free to close this browser tab.
-</br></br></br></br>
-    Error details: error {0} error_description: {1}
-  </body>
-</html>
-""";
-
 	private readonly IDefaultOSBrowser _defaultOSBrowser;
 	private readonly IUriInterceptor _interceptor;
 	private readonly ILogger _logger;
@@ -114,8 +94,8 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 
 			var errorMessage =
 				String.Format(
-					CultureInfo.InvariantCulture,
-					DefaultFailureHtml,
+					CultureInfo.CurrentCulture,
+					AuthenticationResource.FailureHtml,
 					error,
 					errorDescription
 				);
@@ -123,7 +103,7 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 			return new MessageAndHttpCode(HttpStatusCode.OK, errorMessage);
 		}
 
-		return new MessageAndHttpCode(HttpStatusCode.OK, DefaultSuccessHtml);
+		return new MessageAndHttpCode(HttpStatusCode.OK, AuthenticationResource.SuccessHtml);
 	}
 
 	private static (string Error, string ErrorDescription) GetErrorFromUri(Uri resultUri)
