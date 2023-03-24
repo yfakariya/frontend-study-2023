@@ -6,5 +6,12 @@
     <RootNamespace>GitHubViewer</RootNamespace>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Localization" />
+    <AssemblyAttribute Include="Microsoft.Extensions.Localization.RootNamespaceAttribute">
+      <_Parameter1>$(RootNamespace)</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

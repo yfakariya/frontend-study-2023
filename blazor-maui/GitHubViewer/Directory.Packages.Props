@@ -2,6 +2,7 @@
   <ItemGroup>
     <!-- Common -->
     <PackageVersion Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Localization" Version="7.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageVersion Include="MudBlazor" Version="6.2.0" />
     <!-- App -->

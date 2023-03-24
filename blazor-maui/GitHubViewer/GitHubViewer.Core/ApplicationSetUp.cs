@@ -17,6 +17,7 @@ public static class ApplicationSetUp
 {
 	public static void RegisterServices(IServiceCollection services, bool useScoped)
 	{
+		services.AddLocalization();
 		services.AddLogging(logging =>
 			{
 				logging.AddDebug();

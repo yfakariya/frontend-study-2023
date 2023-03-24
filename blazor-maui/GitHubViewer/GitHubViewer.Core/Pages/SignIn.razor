@@ -1,11 +1,12 @@
+@using System.ComponentModel.DataAnnotations;
 @using System.Globalization
 @using GitHubViewer.Authentication;
 @using GitHubViewer.Infrastructure;
-@using System.ComponentModel.DataAnnotations;
 @attribute [Route(Routes.SignIn)]
 @inject IBrowserLauncher BrowserLauncher
 @inject IGitHubAuthenticator Authenticator
 @inject ILogger<SignIn> Logger
+@inject IStringLocalizer<SignIn> L
 @inject NavigationManager Navigation
 
 @* MudStack? *@
@@ -19,7 +20,7 @@
             {
                 <ErrorPanel Class="mb-4">
                     <MudStack>
-                        There are some validation error(s).
+                        @L["ValidationErrorHeader"]
                         <ValidationSummary />
                     </MudStack>
                 </ErrorPanel>
@@ -35,25 +36,21 @@
             <InfoPanel Class="mb-4">
                 @* TODO: L10N *@
                 <MudText>
-                    Input GitHub client ID and client secret which you registered. See
+                    @L["ClientIdAndSecretDescriptionPrefix"]
                     <MudLink OnClick="@ClickGitHubLink">
                         @GitHubLink
                     </MudLink>
-                    for details.
+                    @L["ClientIdAndSecretDescriptionSuffix"]
                 </MudText>
             </InfoPanel>
 
-            @* TODO: L10N *@
             <MudTextField @bind-Value="Model.ClientId" For="() => Model.ClientId" Label="@Label.FromDisplay(() => Model.ClientId)" HelperText="@Description.FromDisplay(() => Model.ClientId)" />
-            @* TODO: L10N *@
             <MudTextField @bind-Value="Model.ClientSecret" InputType="@InputType.Password" For="() => Model.ClientSecret" Label="@Label.FromDisplay(() => Model.ClientSecret)" HelperText="@Description.FromDisplay(()=> Model.ClientSecret)" />
-            @* TODO: L10N *@
-            <MudCheckBox @bind-Checked="Model.Persists" Label="Persists these values" />
+            <MudCheckBox @bind-Checked="Model.Persists" Label="@L["PersistsLabel"]" />
         </MudCardContent>
-        @* TODO: L10N *@
         <MudCardActions>
             @* TODO: Guard... *@
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">Sign in</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SignInButton"]</MudButton>
         </MudCardActions>
 
     </EditForm>
@@ -104,20 +101,36 @@
 
     class ViewModel
     {
-        [Required]
-        [MinLength(1)]
+        [Required(
+            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceName = nameof(RequiredAttribute)
+        )]
+        [MinLength(
+            1,
+            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceName = nameof(MinLengthAttribute)
+        )]
         [Display(
-            Name = "Client ID",
-            Description = "Client ID configured in your GitHub account setting for this app."
-        )] // TODO: L10N
+            ResourceType = typeof(SignIn_Display),
+            Name = $"{nameof(ClientId)}_Name",
+            Description = $"{nameof(ClientId)}_Description"
+        )]
         public string ClientId { get; set; } = default!;
 
-        [Required]
-        [MinLength(1)]
+        [Required(
+            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceName = nameof(RequiredAttribute)
+        )]
+        [MinLength(
+            1,
+            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceName = nameof(MinLengthAttribute)
+        )]
         [Display(
-            Name = "Client Secret",
-            Description = "Client Secret configured in your GitHub account setting for this app."
-        )] // TODO: L10N
+            ResourceType = typeof(SignIn_Display),
+            Name = $"{nameof(ClientSecret)}_Name",
+            Description = $"{nameof(ClientSecret)}_Description"
+        )]
         public string ClientSecret { get; set; } = default!;
 
         public bool Persists { get; set; } = false;
