@@ -1,5 +1,29 @@
+@inject IStringLocalizer<NavMenu> L
+
 <MudNavMenu>
-	<MudNavLink Href="@Routes.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-	<MudNavLink Href="@Routes.Issues" Match="NavLinkMatch.Prefix">Issues</MudNavLink>
-	<MudNavLink Href="@Routes.SignIn" Match="NavLinkMatch.Prefix">Sign in</MudNavLink>
+    <MudNavLink Href="@Routes.Home" Match="NavLinkMatch.All">@L["Home"]</MudNavLink>
+    @if (IsAnonymous)
+    {
+        <MudNavLink Href="@Routes.SignIn" Match="NavLinkMatch.Prefix">@L["SignIn"]</MudNavLink>
+    }
+    else
+    {
+        <MudNavLink Href="@Routes.Issues" Match="NavLinkMatch.Prefix">@L["Issues"]</MudNavLink>
+    }
 </MudNavMenu>
+
+@code {
+    bool IsAnonymous { get; set; } = true;
+
+    [CascadingParameter]
+    Task<AuthenticationState>? AuthenticationState { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var authenticationState = AuthenticationState;
+        if (authenticationState != null)
+        {
+            IsAnonymous = !((await authenticationState).User.Identity?.IsAuthenticated == true);
+        }
+    }
+}
