@@ -27,7 +27,7 @@ internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Brows
 				).ConfigureAwait(false);
 
 			var url =
-				new RequestUrl(Uris.CallbackUriString)
+				new RequestUrl(Uris.MobileCallbackUriString)
 				.Create(new Parameters(result.Properties));
 
 			return

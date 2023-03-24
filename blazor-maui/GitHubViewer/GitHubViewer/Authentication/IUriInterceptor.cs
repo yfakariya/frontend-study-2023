@@ -5,30 +5,21 @@
 // Based on MDAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/src/client/Microsoft.Identity.Client/Platforms/Features/DefaultOSBrowser/IUriInterceptor.cs
 // MIT license (https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/LICENSE)
 
-#pragma warning disable CA1716
-namespace Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
-#pragma warning restore CA1716
+namespace GitHubViewer.Authentication;
 
 /// <summary>
 /// An abstraction over objects that are able to listen to localhost url (e.g. http://localhost:1234)
-/// and to retrieve the whole url, including query params (e.g. http://localhost:1234?code=auth_code_from_aad)
+/// and to retrieve the whole url, including query params (e.g. http://localhost:1234?code=auth_code)
 /// </summary>
-internal interface IUriInterceptor
+internal interface IUriInterceptor : IDisposable
 {
 	/// <summary>
-	/// Listens to http://localhost:{port} and retrieve the entire url, including query params. Then
-	/// push back a response such as a display message or a redirect.
+	/// Gets a pending <see cref="Task"/> to ready to handle incoming http request.
 	/// </summary>
-	/// <remarks>Cancellation is very important as this is typically a long running unmonitored operation</remarks>
-	/// <param name="port">the port to listen to</param>
-	/// <param name="path">the path to listen in</param>
-	/// <param name="responseProducer">The message to be displayed, or url to be redirected to will be created by this callback</param>
-	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Full redirect uri</returns>
-	Task<Uri> ListenToSingleRequestAndRespondAsync(
-		int port,
-		string path,
-		Func<Uri, MessageAndHttpCode> responseProducer,
-		CancellationToken cancellationToken
-	);
+	Task Ready { get; }
+
+	/// <summary>
+	/// Gets a pending <see cref="Task{T}"/> to get the entire url, including query params.
+	/// </summary>
+	Task<Uri> ListenToSingleRequestAndRespondAsync(CancellationToken cancellationToken = default);
 }

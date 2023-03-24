@@ -3,6 +3,8 @@
 // See the LICENSE in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Security.Claims;
 using IdentityModel.OidcClient;
@@ -14,7 +16,7 @@ namespace GitHubViewer.Authentication;
 public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 {
 	private static ProviderInformation GetGitHubProviderInformation(string issuerName)
-		=> new ProviderInformation
+		=> new()
 		{
 			AuthorizeEndpoint = "https://github.com/login/oauth/authorize",
 			EndSessionEndpoint = String.Empty,
@@ -27,7 +29,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	private readonly GitHubTokenInformation _tokenInformation;
 	private readonly CredentialsRepository _credentialStore;
 	private readonly IdentityModel.OidcClient.Browser.IBrowser _browser;
-	private readonly IOptions<GitHubOptions> _options;
+	private readonly IOptionsMonitor<GitHubOptions> _options;
 	private readonly IHttpClientFactory _httpClientFactory;
 	private readonly ILoggerFactory _loggerFactory;
 
@@ -42,7 +44,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		IdentityModel.OidcClient.Browser.IBrowser browser,
 		IHttpClientFactory httpClientFactory,
 		ILoggerFactory loggerFactory,
-		IOptions<GitHubOptions> options
+		IOptionsMonitor<GitHubOptions> options
 	)
 	{
 		_userProfile = userProfile;
@@ -64,8 +66,8 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		}
 		else
 		{
-			var scopes = await _tokenInformation.GetScopesAsync(credentials).ConfigureAwait(false);
-			user = await _userProfile.GetAuthenticatedUserAsync(scopes).ConfigureAwait(false);
+			var scopes = await _tokenInformation.GetScopesAsync(credentials, cancellationToken).ConfigureAwait(false);
+			user = await _userProfile.GetAuthenticatedUserAsync(scopes, cancellationToken).ConfigureAwait(false);
 		}
 
 		OnUserChanged(user);
@@ -77,9 +79,9 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	{
 		var credentials = await _credentialStore.GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
 
-		if (credentials == null || credentials.ClientId != clientId)
+		if (credentials == null || credentials.ClientId != clientId || credentials.ClientSecret != clientSecret)
 		{
-			var authorityAndIssuer = _options.Value.BaseAddress.ToString();
+			var authorityAndIssuer = _options.CurrentValue.BaseAddress.ToString();
 			var oidcClient =
 				new OidcClient(
 					new OidcClientOptions
@@ -88,11 +90,15 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 						ClientId = clientId,
 						ClientSecret = clientSecret,
 						Scope = String.Empty,
-						RedirectUri = Uris.CallbackUriString,
+						RedirectUri =
+							RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+							? String.Format(CultureInfo.InvariantCulture, Uris.WindowsCallbackUriStringTemplate, _options.CurrentValue.OAuthRedirectPort)
+							: Uris.MobileCallbackUriString,
 						Browser = _browser,
 						HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),
 						LoggerFactory = _loggerFactory,
 						ProviderInformation = GetGitHubProviderInformation(authorityAndIssuer),
+						LoadProfile = false,
 						Policy =
 						{
 							Discovery =
@@ -109,12 +115,12 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 				ThrowAuthenticationException(result);
 			}
 
-			credentials = new OAuth2Credentials(clientId, result.AccessToken);
+			credentials = new OAuth2Credentials(clientId, clientSecret, result.AccessToken);
 			await _credentialStore.SetCredentialsAsync(credentials, persists: persists, cancellationToken: cancellationToken).ConfigureAwait(false);
 		}
 
-		var scopes = await _tokenInformation.GetScopesAsync(credentials).ConfigureAwait(false);
-		var user = await _userProfile.GetAuthenticatedUserAsync(scopes).ConfigureAwait(false);
+		var scopes = await _tokenInformation.GetScopesAsync(credentials, cancellationToken).ConfigureAwait(false);
+		var user = await _userProfile.GetAuthenticatedUserAsync(scopes, cancellationToken).ConfigureAwait(false);
 		OnUserChanged(user);
 		return user;
 	}

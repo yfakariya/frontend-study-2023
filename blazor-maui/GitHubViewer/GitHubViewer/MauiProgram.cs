@@ -32,7 +32,6 @@ public static class MauiProgram
 		ApplicationSetUp.RegisterServices(builder.Services, useScoped: false);
 		builder.Services.AddSingleton<IBrowserLauncher, MauiBrowserLauncher>();
 
-		builder.Services.AddSingleton<ICredentialStore, MauiSecureStorageCredentialsRepository>();
 		builder.Services.AddSingleton<CredentialsRepository, MauiSecureStorageCredentialsRepository>();
 		builder.Services.AddSingleton<IGitHubAuthenticator, MauiGitHubAuthenticator>();
 		builder.Services.AddSingleton<AuthenticationStateProvider, GitHubAuthenticationStateProvider>();
@@ -41,7 +40,7 @@ public static class MauiProgram
 		// Due to WindowsAppSDK issue (https://github.com/microsoft/WindowsAppSDK/issues/441),
 		// we cannot use WebAuthentication in Windows, so we use HttpListener based oauth2 authentication, borrowed from MSAL.NET.
 		builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, HttpListenerAuthenticationBrowser>();
-		builder.Services.AddSingleton<IUriInterceptor, HttpListenerInterceptor>();
+		builder.Services.AddSingleton<IUriInterceptorFactory, HttpListenerUriInterceptorFactory>();
 		builder.Services.AddSingleton<IDefaultOSBrowser, WindowsDefaultOSBrowser>();
 #else
 		builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, MauiAuthenticationBrowser>();

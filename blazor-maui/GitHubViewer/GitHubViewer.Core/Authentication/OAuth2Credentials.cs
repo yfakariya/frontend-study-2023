@@ -4,4 +4,4 @@
 
 namespace GitHubViewer.Authentication;
 
-public record OAuth2Credentials(string ClientId, string AccessToken);
+public record OAuth2Credentials(string ClientId, string ClientSecret, string AccessToken);

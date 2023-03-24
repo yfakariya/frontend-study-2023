@@ -21,7 +21,7 @@ internal static partial class Log
 		Level = LogLevel.Warning,
 		Message = "HttpListener stopped because cancellation was requested."
 	)]
-	public static partial void ListeningIsCancelded(this ILogger logger);
+	public static partial void ListeningIsCanceled(this ILogger logger);
 
 	[LoggerMessage(
 		EventId = 1003,

@@ -2,19 +2,31 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
+using GitHubViewer.Infrastructure;
 using Octokit;
 
 namespace GitHubViewer.Authentication;
 
 public class GitHubTokenInformation
 {
-	private readonly IAuthorizationsClient _authorizationsClient;
+	private readonly BasicAuthenticationApiConnectionFactory _connectionFactory;
 
-	public GitHubTokenInformation(IApiConnection connection)
+	public GitHubTokenInformation(BasicAuthenticationApiConnectionFactory connectionFactory)
 	{
-		_authorizationsClient = new AuthorizationsClient(connection);
+		_connectionFactory = connectionFactory;
 	}
 
-	public async Task<IReadOnlyList<string>> GetScopesAsync(OAuth2Credentials credentials)
-		=> (await _authorizationsClient.CheckApplicationAuthentication(credentials.ClientId, credentials.AccessToken).ConfigureAwait(false)).Scopes;
+	public async Task<IReadOnlyList<string>> GetScopesAsync(OAuth2Credentials credentials, CancellationToken cancellationToken = default)
+	{
+		var authorizationsClient =
+			new AuthorizationsClient(
+				await _connectionFactory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false)
+			);
+
+		return
+			(await authorizationsClient.CheckApplicationAuthentication(
+				credentials.ClientId,
+				credentials.AccessToken
+			).ConfigureAwait(false)).Scopes;
+	}
 }

@@ -7,6 +7,7 @@
 
 using System.Diagnostics;
 using System.Net;
+using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Text;
 using GitHubViewer.Authentication;
@@ -15,31 +16,23 @@ using Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
 
 namespace Microsoft.Identity.Client.Platforms.Shared.DefaultOSBrowser;
 
-internal sealed class HttpListenerInterceptor : IUriInterceptor
+internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 {
+	private readonly HttpListener _listener;
+	private readonly string _urlToListenTo;
+	private readonly Func<Uri, MessageAndHttpCode> _responseProducer;
 	private readonly ILogger _logger;
+	private readonly TaskCompletionSource _ready;
+	private readonly TaskCompletionSource<Uri> _intercepted;
+
+	public Task Ready => _ready.Task;
+
+	public Task<Uri> Intercepted => _intercepted.Task;
 
 #if DEBUG
-	public Action? TestBeforeTopLevelCall { get; set; }
-	public Action<string>? TestBeforeStart { get; set; }
 	public Action? TestBeforeGetContext { get; set; }
 #endif
 
-	[Conditional("DEBUG")]
-	private void OnBeforeTopLevelCall()
-	{
-#if DEBUG
-		TestBeforeTopLevelCall?.Invoke();
-#endif
-	}
-
-	[Conditional("DEBUG")]
-	private void OnBeforeStartCall(string urlToListenTo)
-	{
-#if DEBUG
-		TestBeforeStart?.Invoke(urlToListenTo);
-#endif
-	}
 
 	[Conditional("DEBUG")]
 	private void OnBeforeGetContext()
@@ -49,21 +42,13 @@ internal sealed class HttpListenerInterceptor : IUriInterceptor
 #endif
 	}
 
-	public HttpListenerInterceptor(ILogger<HttpListenerInterceptor> logger)
-	{
-		_logger = logger;
-	}
-
-	public async Task<Uri> ListenToSingleRequestAndRespondAsync(
+	public HttpListenerUriInterceptor(
 		int port,
 		string path,
 		Func<Uri, MessageAndHttpCode> responseProducer,
-		CancellationToken cancellationToken
+		ILogger<HttpListenerUriInterceptor> logger
 	)
 	{
-		OnBeforeTopLevelCall();
-		cancellationToken.ThrowIfCancellationRequested();
-
 		path =
 			String.IsNullOrEmpty(path)
 			? "/"
@@ -78,36 +63,44 @@ internal sealed class HttpListenerInterceptor : IUriInterceptor
 			urlToListenTo += "/";
 		}
 
-		var httpListener = new HttpListener();
+		_urlToListenTo = urlToListenTo;
+		_responseProducer = responseProducer;
+		_ready = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+		_intercepted = new TaskCompletionSource<Uri>(TaskCreationOptions.RunContinuationsAsynchronously);
+		_listener = new HttpListener();
+		_listener.Prefixes.Add(urlToListenTo);
+
+		_logger = logger;
+	}
+
+	public void Dispose()
+	{
 		try
 		{
-			httpListener.Prefixes.Add(urlToListenTo);
+			_listener.Abort();
+		}
+		catch { }
+	}
 
-			OnBeforeStartCall(urlToListenTo);
-			TestBeforeStart?.Invoke(urlToListenTo);
+	public async Task<Uri> ListenToSingleRequestAndRespondAsync(CancellationToken cancellationToken)
+	{
+		try
+		{
+			_listener.Start();
+			OnBeforeGetContext();
 
-			httpListener.Start();
-			_logger.StartListening(urlToListenTo);
+			var contextTask = _listener.GetContextAsync().ConfigureAwait(false);
 
-			using (cancellationToken.Register(() =>
-				{
-					_logger.ListeningIsCancelded();
-					TryStopListening(httpListener);
-				})
-			)
-			{
-				OnBeforeGetContext();
+			_ready.SetResult();
 
-				var context = await httpListener.GetContextAsync().ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
 
-				cancellationToken.ThrowIfCancellationRequested();
+			var context = await contextTask;
+			await RespondAsync(context, cancellationToken).ConfigureAwait(false);
+			_logger.ListenerReceivedMessage(_urlToListenTo);
 
-				await RespondAsync(responseProducer, context, cancellationToken).ConfigureAwait(false);
-				_logger.ListenerReceivedMessage(urlToListenTo);
-
-				// the request URL should now contain the auth code and pkce
-				return context.Request.Url!;
-			}
+			// the request URL should now contain the auth code and pkce
+			return context.Request.Url!;
 		}
 		// If cancellation is requested before GetContextAsync is called, then either 
 		// an ObjectDisposedException or an HttpListenerException is thrown.
@@ -120,7 +113,7 @@ internal sealed class HttpListenerInterceptor : IUriInterceptor
 			if (ex is HttpListenerException)
 			{
 				throw new AuthenticationException(
-					$"An HttpListenerException occurred while listening on {urlToListenTo} for the system browser to complete the login. " +
+					$"An HttpListenerException occurred while listening on {_urlToListenTo} for the system browser to complete the login. " +
 					"Possible cause and mitigation: the app is unable to listen on the specified URL; " +
 					"run 'netsh http add iplisten 127.0.0.1' from the Admin command prompt.",
 					ex
@@ -129,10 +122,6 @@ internal sealed class HttpListenerInterceptor : IUriInterceptor
 
 			// if cancellation was not requested, propagate original ex
 			throw;
-		}
-		finally
-		{
-			TryStopListening(httpListener);
 		}
 	}
 
@@ -148,12 +137,11 @@ internal sealed class HttpListenerInterceptor : IUriInterceptor
 	}
 
 	private async ValueTask RespondAsync(
-		Func<Uri, MessageAndHttpCode> responseProducer,
 		HttpListenerContext context,
 		CancellationToken cancellationToken
 	)
 	{
-		var messageAndCode = responseProducer(context.Request.Url!);
+		var messageAndCode = _responseProducer(context.Request.Url!);
 		_logger.ProcessingResponseToBrowser(messageAndCode.HttpCode);
 
 		try

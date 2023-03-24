@@ -1,50 +1,73 @@
 @using System.Globalization
 @using GitHubViewer.Authentication;
 @using GitHubViewer.Infrastructure;
+@using System.ComponentModel.DataAnnotations;
 @attribute [Route(Routes.SignIn)]
 @inject IBrowserLauncher BrowserLauncher
 @inject IGitHubAuthenticator Authenticator
 @inject ILogger<SignIn> Logger
 @inject NavigationManager Navigation
 
-<MudStack>
-    @if (!String.IsNullOrEmpty(Error))
-    {
-        <ErrorPanel>
-            <MudText>@Error</MudText>
-        </ErrorPanel>
-    }
-    <InfoPanel>
+@* MudStack? *@
+<MudCard>
+    <EditForm Model="@Model" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+        <DataAnnotationsValidator />
+
+        <MudCardContent>
+
+            @if (IsInvalid)
+            {
+                <ErrorPanel Class="mb-4">
+                    <MudStack>
+                        There are some validation error(s).
+                        <ValidationSummary />
+                    </MudStack>
+                </ErrorPanel>
+            }
+
+            @if (!String.IsNullOrEmpty(Error))
+            {
+                <ErrorPanel Class="mb-4">
+                    <MudText>@Error</MudText>
+                </ErrorPanel>
+            }
+
+            <InfoPanel Class="mb-4">
+                @* TODO: L10N *@
+                <MudText>
+                    Input GitHub client ID and client secret which you registered. See
+                    <MudLink OnClick="@ClickGitHubLink">
+                        @GitHubLink
+                    </MudLink>
+                    for details.
+                </MudText>
+            </InfoPanel>
+
+            @* TODO: L10N *@
+            <MudTextField @bind-Value="Model.ClientId" For="() => Model.ClientId" Label="@Label.FromDisplay(() => Model.ClientId)" HelperText="@Description.FromDisplay(() => Model.ClientId)" />
+            @* TODO: L10N *@
+            <MudTextField @bind-Value="Model.ClientSecret" InputType="@InputType.Password" For="() => Model.ClientSecret" Label="@Label.FromDisplay(() => Model.ClientSecret)" HelperText="@Description.FromDisplay(()=> Model.ClientSecret)" />
+            @* TODO: L10N *@
+            <MudCheckBox @bind-Checked="Model.Persists" Label="Persists these values" />
+        </MudCardContent>
         @* TODO: L10N *@
-        <MudText>
-            Input GitHub client ID and client secret which you registered. See
-            <MudLink OnClick="@ClickGitHubLink">
-                @GitHubLink
-            </MudLink>
-            for details.
-        </MudText>
-    </InfoPanel>
+        <MudCardActions>
+            @* TODO: Guard... *@
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">Sign in</MudButton>
+        </MudCardActions>
 
-    @* TODO: L10N *@
-    <MudTextField @bind-Value="ClientId" Label="Client ID" Placeholder="Client ID configured in your GitHub account setting for this app." />
-    @* TODO: L10N *@
-    <MudTextField @bind-Value="ClientSecret" Label="Client Secret" InputType="@InputType.Password" Placeholder="Client Secret configured in your GitHub account setting for this app." />
-    @* TODO: L10N *@
-    <MudCheckBox @bind-Checked="Persists" Label="Persists these values" />
-    @* TODO: L10N *@
-    <MudContainer MaxWidth="MaxWidth.False" Class="d-flex justify-end pe-0">
-        <MudButton OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Sign in</MudButton>
-    </MudContainer>
-
-</MudStack>
+    </EditForm>
+</MudCard>
 
 @code {
-    public string GitHubLink
+    string GitHubLink
         => $"https://docs.github.com/{CultureInfo.CurrentUICulture.Parent.Name}/developers/apps/building-oauth-apps/creating-an-oauth-app";
-    public string? Error { get; set; }
-    public string ClientId { get; set; } = null!;
-    public string ClientSecret { get; set; } = null!;
-    public bool Persists { get; set; }
+
+    string? Error { get; set; }
+
+    ViewModel Model { get; set; } = new ViewModel();
+
+    bool IsInvalid { get; set; } = false;
 
     public async Task ClickGitHubLink()
     {
@@ -59,11 +82,17 @@
         }
     }
 
-    public async Task Submit()
+    void OnInvalidSubmit()
     {
+        IsInvalid = true;
+    }
+
+    async Task OnValidSubmit()
+    {
+        IsInvalid = false;
         try
         {
-            await Authenticator.SignInAsync(ClientId, ClientSecret, Persists);
+            await Authenticator.SignInAsync(Model.ClientId, Model.ClientSecret, Model.Persists);
             Navigation.NavigateTo(Routes.Home, forceLoad: false, replace: true);
         }
         catch (Exception ex)
@@ -71,5 +100,26 @@
             Error = ex.Message;
             Logger.LogError(ex, "Failed to sign-in.");
         }
+    }
+
+    class ViewModel
+    {
+        [Required]
+        [MinLength(1)]
+        [Display(
+            Name = "Client ID",
+            Description = "Client ID configured in your GitHub account setting for this app."
+        )] // TODO: L10N
+        public string ClientId { get; set; } = default!;
+
+        [Required]
+        [MinLength(1)]
+        [Display(
+            Name = "Client Secret",
+            Description = "Client Secret configured in your GitHub account setting for this app."
+        )] // TODO: L10N
+        public string ClientSecret { get; set; } = default!;
+
+        public bool Persists { get; set; } = false;
     }
 }

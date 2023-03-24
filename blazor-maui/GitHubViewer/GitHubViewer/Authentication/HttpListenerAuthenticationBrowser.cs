@@ -17,15 +17,16 @@ namespace GitHubViewer.Authentication;
 
 internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser
 {
-	private const string DefaultSuccessHtml = @"""
+	private const string DefaultSuccessHtml = """
 <html>
   <head><title>Authentication Complete</title></head>
   <body>
     Authentication complete. You can return to the application. Feel free to close this browser tab.
   </body>
-</html>""";
+</html>
+""";
 
-	private const string DefaultFailureHtml = @"""
+	private const string DefaultFailureHtml = """
 <html>
   <head><title>Authentication Failed</title></head>
   <body>
@@ -33,20 +34,21 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 </br></br></br></br>
     Error details: error {0} error_description: {1}
   </body>
-</html>""";
+</html>
+""";
 
 	private readonly IDefaultOSBrowser _defaultOSBrowser;
-	private readonly IUriInterceptor _uriInterceptor;
+	private readonly IUriInterceptorFactory _uriInterceptorFactory;
 	private readonly ILogger _logger;
 
 	public HttpListenerAuthenticationBrowser(
 		IDefaultOSBrowser defaultOSBrowser,
-		IUriInterceptor uriInterceptor,
+		IUriInterceptorFactory uriInterceptorFactory,
 		ILogger<HttpListenerAuthenticationBrowser> logger
 	)
 	{
 		_defaultOSBrowser = defaultOSBrowser;
-		_uriInterceptor = uriInterceptor;
+		_uriInterceptorFactory = uriInterceptorFactory;
 		_logger = logger;
 	}
 
@@ -54,33 +56,42 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 	{
 		var redirectUri = new Uri(options.EndUrl);
 		cancellationToken.ThrowIfCancellationRequested();
-		await _defaultOSBrowser.OpenAsync(options.StartUrl).ConfigureAwait(false);
 
-		cancellationToken.ThrowIfCancellationRequested();
-		try
+		// TODO: randomize port
+		using (var interceptor =
+			_uriInterceptorFactory.CreateInterceptor(
+				redirectUri.Port,
+				redirectUri.AbsolutePath,
+				GetResponseMessage
+			))
 		{
-			var authCodeUri =
-				await _uriInterceptor.ListenToSingleRequestAndRespondAsync(
-					redirectUri.Port,
-					redirectUri.AbsolutePath,
-					GetResponseMessage,
-					cancellationToken
-				).ConfigureAwait(false);
-
-			return
-				new BrowserResult
-				{
-					Response = authCodeUri!.OriginalString,
-					ResultType = BrowserResultType.Success,
-				};
-		}
-		catch (OperationCanceledException)
-		{
-			return
-			new BrowserResult
+			try
 			{
-				ResultType = BrowserResultType.UserCancel
-			};
+				var interception = interceptor.ListenToSingleRequestAndRespondAsync(cancellationToken).ConfigureAwait(false);
+
+				cancellationToken.ThrowIfCancellationRequested();
+
+				await interceptor.Ready.ConfigureAwait(false);
+
+				await _defaultOSBrowser.OpenAsync(options.StartUrl).ConfigureAwait(false);
+
+				var authCodeUri = await interception;
+
+				return
+					new BrowserResult
+					{
+						Response = authCodeUri!.OriginalString,
+						ResultType = BrowserResultType.Success,
+					};
+			}
+			catch (OperationCanceledException)
+			{
+				return
+					new BrowserResult
+					{
+						ResultType = BrowserResultType.UserCancel
+					};
+			}
 		}
 	}
 

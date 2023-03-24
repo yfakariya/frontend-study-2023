@@ -3,10 +3,11 @@
 // See the LICENSE in the project root for more information.
 
 using Octokit;
+using Octokit.Internal;
 
 namespace GitHubViewer.Authentication;
 
-public abstract class CredentialsRepository : ICredentialStore
+public abstract class CredentialsRepository
 {
 	private OAuth2Credentials? _inMemory;
 
@@ -44,12 +45,24 @@ public abstract class CredentialsRepository : ICredentialStore
 
 	protected abstract ValueTask ClearPersistedCredentialsAsync(CancellationToken cancellationToken);
 
-	async Task<Credentials> ICredentialStore.GetCredentials()
+	public async ValueTask<ICredentialStore> GetBasicAuthenticationCredentialStore(CancellationToken cancellationToken = default)
 	{
-		var underlying = await GetCredentialsAsync().ConfigureAwait(false);
+		var underlying = await GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
 		return
-			underlying == null
-			? Credentials.Anonymous
-			: new Credentials(underlying.AccessToken, AuthenticationType.Oauth);
+			new InMemoryCredentialStore(
+				underlying == null
+				? Credentials.Anonymous
+				: new Credentials(underlying.ClientId, underlying.ClientSecret, AuthenticationType.Basic)
+			);
+	}
+	public async ValueTask<ICredentialStore> GetOAuth2CredentialStore(CancellationToken cancellationToken = default)
+	{
+		var underlying = await GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
+		return
+			new InMemoryCredentialStore(
+				underlying == null
+				? Credentials.Anonymous
+				: new Credentials(underlying.AccessToken, AuthenticationType.Oauth)
+			);
 	}
 }

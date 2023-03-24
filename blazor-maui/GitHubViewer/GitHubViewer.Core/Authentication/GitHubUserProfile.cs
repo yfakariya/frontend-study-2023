@@ -3,24 +3,26 @@
 // See the LICENSE in the project root for more information.
 
 using System.Security.Claims;
+using GitHubViewer.Infrastructure;
 using Octokit;
 
 namespace GitHubViewer.Authentication;
 
 public class GitHubUserProfile
 {
-	private readonly IUsersClient _usersClient;
-	private readonly IApiConnection _connection;
+	private readonly OAuth2ApiConnectionFactory _connectionFactory;
 
-	public GitHubUserProfile(IApiConnection connection)
+	public GitHubUserProfile(OAuth2ApiConnectionFactory connectionFactory)
 	{
-		_connection = connection;
-		_usersClient = new UsersClient(connection);
+		_connectionFactory = connectionFactory;
 	}
 
-	public async Task<ClaimsPrincipal> GetAuthenticatedUserAsync(IReadOnlyCollection<string> scopes)
+	public async Task<ClaimsPrincipal> GetAuthenticatedUserAsync(IReadOnlyCollection<string> scopes, CancellationToken cancellationToken = default)
 	{
-		var currentUser = await _usersClient.Current().ConfigureAwait(false);
+		var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
+		var usersClient = new UsersClient(connection);
+
+		var currentUser = await usersClient.Current().ConfigureAwait(false);
 		if (currentUser == null)
 		{
 			return ClaimsPrincipals.Anonymous;
@@ -29,17 +31,26 @@ public class GitHubUserProfile
 		var claims =
 			new List<Claim>(capacity: scopes.Count + 3)
 			{
-				new Claim(ClaimTypes.NameIdentifier, currentUser.Login),
-				new Claim(ClaimTypes.Name, currentUser.Name),
-				new Claim(ClaimTypes.Email, currentUser.Email)
+				new Claim(ClaimTypes.NameIdentifier, currentUser.Login?.Trim()!),
 			};
+
+		if (!String.IsNullOrEmpty(currentUser.Name))
+		{
+			claims.Add(new Claim(ClaimTypes.Name, currentUser.Name));
+		}
+
+		if (!String.IsNullOrEmpty(currentUser.Email))
+		{
+			claims.Add(new Claim(ClaimTypes.Email, currentUser.Email));
+		}
+
 		claims.AddRange(scopes.Select(s => new Claim(ClaimsPrincipals.ScopeType, s)));
 
 		return
 			new ClaimsPrincipal(
 				new ClaimsIdentity(
 					claims: claims,
-					authenticationType: _connection.Connection.BaseAddress.ToString(),
+					authenticationType: connection.Connection.BaseAddress.ToString(),
 					nameType: ClaimTypes.NameIdentifier,
 					roleType: ClaimsPrincipals.ScopeType
 				)

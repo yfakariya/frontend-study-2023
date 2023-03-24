@@ -1,7 +1,30 @@
 @attribute [Route(Routes.Home)]
+@inject IAuthorizationPolicyProvider PolicyProvider
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
+<MudText>You are @GetCurrentAuthenticationState()</MudText>
+
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    [CascadingParameter]
+    Task<AuthenticationState>? ExistingCascadedAuthenticationState{ get; set; }
+
+    string GetCurrentAuthenticationState()
+    {
+        if (ExistingCascadedAuthenticationState == null)
+        {
+            return "<null>";
+        }
+
+        if(!ExistingCascadedAuthenticationState.IsCompleted)
+        {
+            return "<In-Progress>";
+        }
+
+        return ExistingCascadedAuthenticationState.Result.User?.Identity?.Name ?? "<null-identity>";
+    }
+}

@@ -4,10 +4,12 @@
 
 using GitHubViewer.Authentication;
 using GitHubViewer.Data;
+using GitHubViewer.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using Octokit;
+using Octokit.Internal;
 
 namespace GitHubViewer;
 
@@ -19,36 +21,34 @@ public static class ApplicationSetUp
 		services.AddOptions();
 		services.AddAuthorizationCore();
 		services.AddHttpClient();
+		services.AddHttpClient(HttpClientNames.Octokit)
+			.ConfigurePrimaryHttpMessageHandler(HttpMessageHandlerFactory.CreateDefault);
 		services.AddOptions<GitHubOptions>();
+
+		services.AddSingleton(
+			new ProductHeaderValue(
+				"GitHubViewer",
+				"0.1"
+			)
+		);
 
 		if (useScoped)
 		{
-			services.AddScoped(GetApiConnection);
+			services.AddScoped<BasicAuthenticationApiConnectionFactory>();
+			services.AddScoped<OAuth2ApiConnectionFactory>();
 			services.AddScoped<GitHubUserProfile>();
 			services.AddScoped<GitHubTokenInformation>();
 		}
 		else
 		{
-			services.AddSingleton(GetApiConnection);
+			services.AddScoped<BasicAuthenticationApiConnectionFactory>();
+			services.AddScoped<OAuth2ApiConnectionFactory>();
 			services.AddSingleton<GitHubUserProfile>();
 			services.AddSingleton<GitHubTokenInformation>();
 		}
 
 		services.AddSingleton<WeatherForecastService>();
 
-
 		services.AddMudServices();
 	}
-
-	private static IApiConnection GetApiConnection(IServiceProvider serviceProvider)
-		=> new ApiConnection(
-				new Connection(
-					new ProductHeaderValue(
-						"GitHubViewer",
-						"0.1"
-					),
-					serviceProvider.GetRequiredService<IOptions<GitHubOptions>>().Value.BaseAddress,
-					serviceProvider.GetRequiredService<ICredentialStore>()
-				)
-			);
 }

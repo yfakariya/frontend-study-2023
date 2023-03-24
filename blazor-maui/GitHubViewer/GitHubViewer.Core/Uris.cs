@@ -7,7 +7,8 @@ namespace GitHubViewer;
 public static class Uris
 {
 	public const string UriScheme = "github.viewer.app";
-	public const string CallbackUriString = $"{UriScheme}:/oauth2redirect";
-	public static readonly Uri CallbackUri = new(CallbackUriString);
+	public const string MobileCallbackUriString = $"{UriScheme}:/oauth2redirect";
+	public static readonly Uri MobileCallbackUri = new(MobileCallbackUriString);
+	public const string WindowsCallbackUriStringTemplate = $"http://127.0.0.1:{{0}}/{UriScheme}/oauth2redirect";
 	public static readonly Uri GitHubAuthorizationUri = new("https://github.com/login/oauth/authorize");
 }

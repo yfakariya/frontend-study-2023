@@ -19,15 +19,18 @@ public class MauiSecureStorageCredentialsRepository : CredentialsRepository
 		var dic = JsonDocument.Parse(json);
 
 		var clientId = dic.RootElement.GetProperty("clientId"u8).GetString();
+		var clientSecret = dic.RootElement.GetProperty("clientSecret"u8).GetString();
 		var accessToken = dic.RootElement.GetProperty("accessToken"u8).GetString();
 
-		if (String.IsNullOrEmpty(clientId) || String.IsNullOrEmpty(accessToken))
+		if (String.IsNullOrEmpty(clientId)
+			|| String.IsNullOrEmpty(clientSecret)
+			|| String.IsNullOrEmpty(accessToken))
 		{
 			return null;
 		}
 		else
 		{
-			return new OAuth2Credentials(clientId, accessToken);
+			return new OAuth2Credentials(clientId, clientSecret, accessToken);
 		}
 	}
 
@@ -38,6 +41,7 @@ public class MauiSecureStorageCredentialsRepository : CredentialsRepository
 				new Dictionary<string, string>(capacity: 2)
 				{
 					["clientId"] = credentials.ClientId,
+					["clientSecret"] = credentials.ClientSecret,
 					["accessToken"] = credentials.AccessToken,
 				}
 			)
