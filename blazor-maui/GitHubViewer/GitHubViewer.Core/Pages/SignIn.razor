@@ -2,7 +2,10 @@
 @using System.Globalization
 @using GitHubViewer.Authentication;
 @using GitHubViewer.Infrastructure;
+
 @attribute [Route(Routes.SignIn)]
+
+@inject CredentialsRepository CredentialsRepository
 @inject IBrowserLauncher BrowserLauncher
 @inject IGitHubAuthenticator Authenticator
 @inject ILogger<SignIn> Logger
@@ -73,6 +76,16 @@
     bool IsInvalid { get; set; } = false;
 
     bool IsLoading { get; set; } = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var credentials = await CredentialsRepository.GetCredentialsAsync();
+        if (credentials != null)
+        {
+            Model.ClientId = credentials.ClientId;
+            Model.ClientSecret = credentials.ClientSecret;
+        }
+    }
 
     public async Task ClickGitHubLink()
     {
