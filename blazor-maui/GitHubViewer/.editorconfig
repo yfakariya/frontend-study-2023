@@ -77,7 +77,7 @@ dotnet_diagnostic.CA3147.severity = warning
 dotnet_diagnostic.CA5350.severity = warning
 dotnet_diagnostic.CA5351.severity = warning
 dotnet_diagnostic.CA5359.severity = warning
-dotnet_diagnostic.IDE0021.servirity = silent
+dotnet_diagnostic.IDE0021.severity = silent
 
 # 4 width tab indentation
 [*.{cs,tt,ttinclude}]
