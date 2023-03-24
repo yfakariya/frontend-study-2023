@@ -3,7 +3,6 @@
 // See the LICENSE in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Security.Claims;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace GitHubViewer.Authentication;
 
-public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
+internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 {
 	private static ProviderInformation GetGitHubProviderInformation(string issuerName)
 		=> new()
@@ -28,7 +27,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	private readonly GitHubUserProfile _userProfile;
 	private readonly GitHubTokenInformation _tokenInformation;
 	private readonly CredentialsRepository _credentialStore;
-	private readonly IdentityModel.OidcClient.Browser.IBrowser _browser;
+	private readonly IOAuthHelperFactory _oauthHelperFactory;
 	private readonly IOptionsMonitor<GitHubOptions> _options;
 	private readonly IHttpClientFactory _httpClientFactory;
 	private readonly ILoggerFactory _loggerFactory;
@@ -41,7 +40,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		GitHubUserProfile userProfile,
 		GitHubTokenInformation tokenInformation,
 		CredentialsRepository credentialStore,
-		IdentityModel.OidcClient.Browser.IBrowser browser,
+		IOAuthHelperFactory oauthHelperFactory,
 		IHttpClientFactory httpClientFactory,
 		ILoggerFactory loggerFactory,
 		IOptionsMonitor<GitHubOptions> options
@@ -50,7 +49,7 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		_userProfile = userProfile;
 		_tokenInformation = tokenInformation;
 		_credentialStore = credentialStore;
-		_browser = browser;
+		_oauthHelperFactory = oauthHelperFactory;
 		_httpClientFactory = httpClientFactory;
 		_loggerFactory = loggerFactory;
 		_options = options;
@@ -82,40 +81,50 @@ public sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		if (credentials == null || credentials.ClientId != clientId || credentials.ClientSecret != clientSecret)
 		{
 			var authorityAndIssuer = _options.CurrentValue.BaseAddress.ToString();
-			var oidcClient =
-				new OidcClient(
-					new OidcClientOptions
-					{
-						Authority = authorityAndIssuer,
-						ClientId = clientId,
-						ClientSecret = clientSecret,
-						Scope = String.Empty,
-						RedirectUri =
-							RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-							? String.Format(CultureInfo.InvariantCulture, Uris.WindowsCallbackUriStringTemplate, _options.CurrentValue.OAuthRedirectPort)
-							: Uris.MobileCallbackUriString,
-						Browser = _browser,
-						HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),
-						LoggerFactory = _loggerFactory,
-						ProviderInformation = GetGitHubProviderInformation(authorityAndIssuer),
-						LoadProfile = false,
-						Policy =
+
+			using (var helper =
+				_oauthHelperFactory.CreateHelper(
+					RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+						? Uris.WindowsCallbackUri
+						: Uris.MobileCallbackUri
+				)
+			)
+			{
+				var authorizationCodeFlowInformation = helper.Prepare();
+
+				var oidcClient =
+					new OidcClient(
+						new OidcClientOptions
 						{
+							Authority = authorityAndIssuer,
+							ClientId = clientId,
+							ClientSecret = clientSecret,
+							Scope = String.Empty,
+							RedirectUri = authorizationCodeFlowInformation.RedirectUri,
+							Browser = helper.Browser,
+							HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),
+							LoggerFactory = _loggerFactory,
+							ProviderInformation = GetGitHubProviderInformation(authorityAndIssuer),
+							LoadProfile = false,
+							Policy =
+							{
 							Discovery =
 							{
 								RequireKeySet = false,
 							},
-						},
-					}
-				);
+							},
+						}
+					);
 
-			var result = await oidcClient.LoginAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-			if (result.IsError)
-			{
-				ThrowAuthenticationException(result);
+				var result = await oidcClient.LoginAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+				if (result.IsError)
+				{
+					ThrowAuthenticationException(result);
+				}
+
+				credentials = new OAuth2Credentials(clientId, clientSecret, result.AccessToken);
 			}
 
-			credentials = new OAuth2Credentials(clientId, clientSecret, result.AccessToken);
 			await _credentialStore.SetCredentialsAsync(credentials, persists: persists, cancellationToken: cancellationToken).ConfigureAwait(false);
 		}
 

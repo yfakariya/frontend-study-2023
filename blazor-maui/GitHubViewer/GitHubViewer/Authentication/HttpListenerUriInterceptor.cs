@@ -1,13 +1,11 @@
-#pragma warning disable IDE0073
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Copyright (c) FUJIWARA, Yusuke and all contributors.
+// This file is licensed under Apache2 license.
+// See the LICENSE in the project root for more information.
 
 // Based on MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/src/client/Microsoft.Identity.Client/Platforms/Features/DefaultOSBrowser/HttpListenerInterceptor.cs
 // MIT license (https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/LICENSE)
 
-using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Text;
 using GitHubViewer.Authentication;
@@ -19,31 +17,17 @@ namespace Microsoft.Identity.Client.Platforms.Shared.DefaultOSBrowser;
 internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 {
 	private readonly HttpListener _listener;
-	private readonly string _urlToListenTo;
 	private readonly Func<Uri, MessageAndHttpCode> _responseProducer;
 	private readonly ILogger _logger;
 	private readonly TaskCompletionSource _ready;
-	private readonly TaskCompletionSource<Uri> _intercepted;
+
+	public string ListeningUrl { get; }
 
 	public Task Ready => _ready.Task;
 
-	public Task<Uri> Intercepted => _intercepted.Task;
-
-#if DEBUG
-	public Action? TestBeforeGetContext { get; set; }
-#endif
-
-
-	[Conditional("DEBUG")]
-	private void OnBeforeGetContext()
-	{
-#if DEBUG
-		TestBeforeGetContext?.Invoke();
-#endif
-	}
-
 	public HttpListenerUriInterceptor(
-		int port,
+		int minimumPortInclusive,
+		int maximumPortInclusive,
 		string path,
 		Func<Uri, MessageAndHttpCode> responseProducer,
 		ILogger<HttpListenerUriInterceptor> logger
@@ -56,21 +40,18 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 			? path
 			: "/" + path;
 
-		var urlToListenTo = "http://127.0.0.1:" + port + path;
 
-		if (!urlToListenTo.EndsWith("/", StringComparison.Ordinal))
+		if (!path.EndsWith("/", StringComparison.Ordinal))
 		{
-			urlToListenTo += "/";
+			path += "/";
 		}
 
-		_urlToListenTo = urlToListenTo;
 		_responseProducer = responseProducer;
 		_ready = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-		_intercepted = new TaskCompletionSource<Uri>(TaskCreationOptions.RunContinuationsAsynchronously);
 		_listener = new HttpListener();
-		_listener.Prefixes.Add(urlToListenTo);
-
+		ListeningUrl = SetupHttpListener(_listener, path, minimumPortInclusive, maximumPortInclusive);
 		_logger = logger;
+		logger.StartListening(ListeningUrl);
 	}
 
 	public void Dispose()
@@ -82,13 +63,33 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 		catch { }
 	}
 
+	// Internal for testing
+	internal static string SetupHttpListener(HttpListener listener, string path, int minimumPortInclusive, int maximumPortInclusive)
+	{
+		foreach (var port in Enumerable.Range(minimumPortInclusive, maximumPortInclusive - minimumPortInclusive + 1))
+		{
+			var prefix = $"http://127.0.0.1:{port}{path}";
+			listener.Prefixes.Clear();
+			listener.Prefixes.Add(prefix);
+
+			try
+			{
+				listener.Start();
+				return prefix;
+			}
+			catch { }
+		}
+
+		throw new HttpListenerException(
+			unchecked((int)0xC00D158B), // NS_E_PORT_IN_USE_HTTP
+			$"Failed to assign port to HttpListener between {minimumPortInclusive} and {maximumPortInclusive}, inclusive."
+		);
+	}
+
 	public async Task<Uri> ListenToSingleRequestAndRespondAsync(CancellationToken cancellationToken)
 	{
 		try
 		{
-			_listener.Start();
-			OnBeforeGetContext();
-
 			var contextTask = _listener.GetContextAsync().ConfigureAwait(false);
 
 			_ready.SetResult();
@@ -97,7 +98,7 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 
 			var context = await contextTask;
 			await RespondAsync(context, cancellationToken).ConfigureAwait(false);
-			_logger.ListenerReceivedMessage(_urlToListenTo);
+			_logger.ListenerReceivedMessage(ListeningUrl);
 
 			// the request URL should now contain the auth code and pkce
 			return context.Request.Url!;
@@ -113,7 +114,7 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 			if (ex is HttpListenerException)
 			{
 				throw new AuthenticationException(
-					$"An HttpListenerException occurred while listening on {_urlToListenTo} for the system browser to complete the login. " +
+					$"An HttpListenerException occurred while listening on {ListeningUrl} for the system browser to complete the login. " +
 					"Possible cause and mitigation: the app is unable to listen on the specified URL; " +
 					"run 'netsh http add iplisten 127.0.0.1' from the Admin command prompt.",
 					ex
@@ -122,17 +123,6 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 
 			// if cancellation was not requested, propagate original ex
 			throw;
-		}
-	}
-
-	private static void TryStopListening(HttpListener httpListener)
-	{
-		try
-		{
-			httpListener.Abort();
-		}
-		catch
-		{
 		}
 	}
 

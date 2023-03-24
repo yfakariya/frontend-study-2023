@@ -11,11 +11,7 @@ namespace GitHubViewer.Infrastructure;
 
 public abstract class ApiConnectionFactory
 {
-	private static readonly ProductHeaderValue ProductInformation =
-		new ProductHeaderValue(
-			"GitHubViewer",
-			"0.1"
-		);
+	private static readonly ProductHeaderValue ProductInformation = new ("GitHubViewer", "0.1");
 	private static readonly IJsonSerializer JsonSerializer = new SimpleJsonSerializer();
 
 	private readonly CredentialsRepository _credentialsRepository;

@@ -1,4 +1,4 @@
-﻿#pragma warning disable IDE0073
+#pragma warning disable IDE0073
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -21,14 +21,16 @@ internal sealed class HttpListenerUriInterceptorFactory : IUriInterceptorFactory
 	}
 
 	public IUriInterceptor CreateInterceptor(
-		int port,
+		int minimumPortInclusive,
+		int maximumPortInclusive,
 		string path,
 		Func<Uri, MessageAndHttpCode> responseProducer
 	)
 	{
 		return
 			new HttpListenerUriInterceptor(
-				port,
+				minimumPortInclusive,
+				maximumPortInclusive,
 				path,
 				responseProducer,
 				_loggerFactory.CreateLogger<HttpListenerUriInterceptor>()

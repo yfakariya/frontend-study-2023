@@ -2,10 +2,10 @@
   <ItemGroup>
     <!-- Common -->
     <PackageVersion Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageVersion Include="MudBlazor" Version="6.2.0" />
     <!-- App -->
     <PackageVersion Include="IdentityModel.OidcClient" Version="5.2.1" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageVersion Include="Octokit" Version="5.0.2" />
     <PackageVersion Include="Xamarin.Essentials" Version="1.7.5" />
     <!-- .Core -->

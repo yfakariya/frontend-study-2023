@@ -10,8 +10,21 @@ using IdentityModel.OidcClient.Browser;
 
 namespace GitHubViewer.Authentication;
 
-internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser
+internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser, IOAuthHelper
 {
+	private readonly Uri _redirectUri;
+
+	IdentityModel.OidcClient.Browser.IBrowser IOAuthHelper.Browser => this;
+
+	public MauiAuthenticationBrowser(Uri redirectUri)
+	{
+		_redirectUri = redirectUri;
+	}
+
+	void IDisposable.Dispose() { }
+
+	public AuthorizationCodeFlowInformation Prepare() => new(_redirectUri.OriginalString);
+
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{
 		try
@@ -27,7 +40,7 @@ internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Brows
 				).ConfigureAwait(false);
 
 			var url =
-				new RequestUrl(Uris.MobileCallbackUriString)
+				new RequestUrl(options.EndUrl)
 				.Create(new Parameters(result.Properties));
 
 			return

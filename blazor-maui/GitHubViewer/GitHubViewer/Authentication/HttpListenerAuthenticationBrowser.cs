@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net;
 using IdentityModel.OidcClient.Browser;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
 
 namespace GitHubViewer.Authentication;
@@ -15,7 +16,7 @@ namespace GitHubViewer.Authentication;
 // * https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/src/client/Microsoft.Identity.Client/ApiConfig/SystemWebViewOptions.cs
 // MIT license (https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/03fd41da88d9c23d15dd800ff57f63d2a2ffecea/LICENSE)
 
-internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser
+internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClient.Browser.IBrowser, IOAuthHelper
 {
 	private const string DefaultSuccessHtml = """
 <html>
@@ -38,60 +39,67 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 """;
 
 	private readonly IDefaultOSBrowser _defaultOSBrowser;
-	private readonly IUriInterceptorFactory _uriInterceptorFactory;
+	private readonly IUriInterceptor _interceptor;
 	private readonly ILogger _logger;
 
+	IdentityModel.OidcClient.Browser.IBrowser IOAuthHelper.Browser => this;
+
 	public HttpListenerAuthenticationBrowser(
+		string redirectUriPath,
 		IDefaultOSBrowser defaultOSBrowser,
-		IUriInterceptorFactory uriInterceptorFactory,
+		IUriInterceptorFactory interceptorFactory,
+		IOptionsMonitor<GitHubOptions> options,
 		ILogger<HttpListenerAuthenticationBrowser> logger
 	)
 	{
 		_defaultOSBrowser = defaultOSBrowser;
-		_uriInterceptorFactory = uriInterceptorFactory;
+		_interceptor =
+			interceptorFactory.CreateInterceptor(
+				options.CurrentValue.OAuthRedirectMinimumPort,
+				options.CurrentValue.OAuthRedirectMaximumPort,
+				redirectUriPath,
+				GetResponseMessage
+			);
 		_logger = logger;
 	}
+
+	public void Dispose()
+		=> _interceptor.Dispose();
+
+	public AuthorizationCodeFlowInformation Prepare()
+		=> new AuthorizationCodeFlowInformation(_interceptor.ListeningUrl);
 
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{
 		var redirectUri = new Uri(options.EndUrl);
 		cancellationToken.ThrowIfCancellationRequested();
 
-		// TODO: randomize port
-		using (var interceptor =
-			_uriInterceptorFactory.CreateInterceptor(
-				redirectUri.Port,
-				redirectUri.AbsolutePath,
-				GetResponseMessage
-			))
+		try
 		{
-			try
-			{
-				var interception = interceptor.ListenToSingleRequestAndRespondAsync(cancellationToken).ConfigureAwait(false);
+			var interception = _interceptor.ListenToSingleRequestAndRespondAsync(cancellationToken).ConfigureAwait(false);
 
-				cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 
-				await interceptor.Ready.ConfigureAwait(false);
+			await _interceptor.Ready.ConfigureAwait(false);
 
-				await _defaultOSBrowser.OpenAsync(options.StartUrl).ConfigureAwait(false);
+			await _defaultOSBrowser.OpenAsync(options.StartUrl).ConfigureAwait(false);
 
-				var authCodeUri = await interception;
+			var authCodeUri = await interception;
 
-				return
-					new BrowserResult
-					{
-						Response = authCodeUri!.OriginalString,
-						ResultType = BrowserResultType.Success,
-					};
-			}
-			catch (OperationCanceledException)
-			{
-				return
-					new BrowserResult
-					{
-						ResultType = BrowserResultType.UserCancel
-					};
-			}
+			return
+				new BrowserResult
+				{
+					Response = authCodeUri!.OriginalString,
+					ResultType = BrowserResultType.Success,
+				};
+		}
+		catch (OperationCanceledException)
+		{
+			return
+				new BrowserResult
+				{
+					ResultType = BrowserResultType.UserCancel
+				};
 		}
 	}
 

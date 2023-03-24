@@ -5,11 +5,6 @@
 using GitHubViewer.Authentication;
 using GitHubViewer.Infrastructure;
 using Microsoft.AspNetCore.Components.Authorization;
-#if WINDOWS
-using Microsoft.Identity.Client.Platforms.Shared.DefaultOSBrowser;
-using Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
-#endif // WINDOWS
-using Octokit;
 
 namespace GitHubViewer;
 
@@ -39,11 +34,11 @@ public static class MauiProgram
 #if WINDOWS
 		// Due to WindowsAppSDK issue (https://github.com/microsoft/WindowsAppSDK/issues/441),
 		// we cannot use WebAuthentication in Windows, so we use HttpListener based oauth2 authentication, borrowed from MSAL.NET.
-		builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, HttpListenerAuthenticationBrowser>();
+		builder.Services.AddSingleton<IOAuthHelperFactory, HttpListenerAuthenticationBrowserFactory>();
 		builder.Services.AddSingleton<IUriInterceptorFactory, HttpListenerUriInterceptorFactory>();
 		builder.Services.AddSingleton<IDefaultOSBrowser, WindowsDefaultOSBrowser>();
 #else
-		builder.Services.AddSingleton<IdentityModel.OidcClient.Browser.IBrowser, MauiAuthenticationBrowser>();
+		builder.Services.AddSingleton<IOAuthHelperFactory, MauiAuthenticationBrowserFactory>();
 #endif // WINDOWS
 
 		return builder.Build();

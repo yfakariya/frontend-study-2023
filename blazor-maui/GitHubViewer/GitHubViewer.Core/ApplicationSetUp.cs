@@ -6,7 +6,7 @@ using GitHubViewer.Authentication;
 using GitHubViewer.Data;
 using GitHubViewer.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using Octokit;
 using Octokit.Internal;
@@ -17,13 +17,17 @@ public static class ApplicationSetUp
 {
 	public static void RegisterServices(IServiceCollection services, bool useScoped)
 	{
-		services.AddLogging();
+		services.AddLogging(logging =>
+			{
+				logging.AddDebug();
+			}
+		);
 		services.AddOptions();
+		services.AddOptions<GitHubOptions>();
 		services.AddAuthorizationCore();
 		services.AddHttpClient();
 		services.AddHttpClient(HttpClientNames.Octokit)
 			.ConfigurePrimaryHttpMessageHandler(HttpMessageHandlerFactory.CreateDefault);
-		services.AddOptions<GitHubOptions>();
 
 		services.AddSingleton(
 			new ProductHeaderValue(

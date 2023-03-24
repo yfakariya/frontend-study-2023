@@ -14,5 +14,8 @@ public class GitHubOptions
 	public Uri BaseAddress { get; set; } = new Uri("https://api.github.com");
 
 	[Range(minimum: 1024, maximum: 65535)]
-	public int OAuthRedirectPort { get; set; } = 3000;
+	public int OAuthRedirectMinimumPort { get; set; } = 49152;
+
+	[Range(minimum: 1024, maximum: 65535)]
+	public int OAuthRedirectMaximumPort { get; set; } = 65535;
 }

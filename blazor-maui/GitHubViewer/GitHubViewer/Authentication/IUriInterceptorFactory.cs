@@ -16,12 +16,14 @@ internal interface IUriInterceptorFactory
 	/// Then push back a response such as a display message or a redirect.
 	/// </summary>
 	/// <remarks>Cancellation is very important as this is typically a long running unmonitored operation</remarks>
-	/// <param name="port">The port to listen to</param>
+	/// <param name="minimumPortInclusive">The minimum port to listen to, inclsuive.</param>
+	/// <param name="maximumPortInclusive">The maximum port to listen to, inclsuive.</param>
 	/// <param name="path">The path to listen in</param>
 	/// <param name="responseProducer">The message to be displayed, or url to be redirected to will be created by this callback</param>
 	/// <returns><see cref="IUriInterceptor"/>, which should be ready to listen.</returns>
 	IUriInterceptor CreateInterceptor(
-		int port,
+		int minimumPortInclusive,
+		int maximumPortInclusive,
 		string path,
 		Func<Uri, MessageAndHttpCode> responseProducer
 	);

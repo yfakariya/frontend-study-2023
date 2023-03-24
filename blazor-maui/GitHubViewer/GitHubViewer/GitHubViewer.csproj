@@ -67,15 +67,13 @@
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <Compile Remove="Authentication\MauiAuthenticationBrowser.cs" />
+    <Compile Remove="Authentication\MauiAuthenticationBrowser*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
-    <Compile Remove="Authentication\HttpListenerAuthenticationBrowser.cs" />
-    <Compile Remove="Authentication\IUriInterceptor.cs" />
-    <Compile Remove="Authentication\IUriInterceptorFactory.cs" />
-    <Compile Remove="Authentication\HttpListenerUriInterceptor.cs" />
-    <Compile Remove="Authentication\HttpListenerUriInterceptorFactory.cs" />
+    <Compile Remove="Authentication\HttpListenerAuthenticationBrowser*.cs" />
+    <Compile Remove="Authentication\IUriInterceptor*.cs" />
+    <Compile Remove="Authentication\HttpListenerUriInterceptor*.cs" />
     <Compile Remove="Authentication\IDefaultOSBrowser.cs" />
     <Compile Remove="Authentication\WindowsDefaultOSBrowser.cs" />
   </ItemGroup>

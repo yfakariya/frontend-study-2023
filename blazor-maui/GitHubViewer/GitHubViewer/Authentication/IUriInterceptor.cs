@@ -13,6 +13,8 @@ namespace GitHubViewer.Authentication;
 /// </summary>
 internal interface IUriInterceptor : IDisposable
 {
+	string ListeningUrl { get; }
+
 	/// <summary>
 	/// Gets a pending <see cref="Task"/> to ready to handle incoming http request.
 	/// </summary>
