@@ -117,16 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
+  <data name="RemovesPersistentDataLabel" xml:space="preserve">
+    <value>保存済みの資格情報を消去する</value>
   </data>
-  <data name="Issues" xml:space="preserve">
-    <value>Issues</value>
+  <data name="SignOutButton" xml:space="preserve">
+    <value>サインアウト</value>
   </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Sign in</value>
-  </data>
-  <data name="SignOut" xml:space="preserve">
-    <value>Sign out</value>
+  <data name="SignOutProgress" xml:space="preserve">
+    <value>サインアウト中……</value>
   </data>
 </root>

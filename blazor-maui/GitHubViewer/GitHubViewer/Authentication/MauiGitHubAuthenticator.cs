@@ -134,9 +134,13 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		return user;
 	}
 
-	public async ValueTask SignOutAsync(CancellationToken cancellationToken = default)
+	public async ValueTask SignOutAsync(bool clearsPersistedData, CancellationToken cancellationToken = default)
 	{
-		await _credentialStore.ClearCredentialsAsync(cancellationToken).ConfigureAwait(false);
+		if (clearsPersistedData)
+		{
+			await _credentialStore.ClearCredentialsAsync(cancellationToken).ConfigureAwait(false);
+		}
+
 		OnUserChanged(ClaimsPrincipals.Anonymous);
 	}
 

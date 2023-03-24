@@ -1,0 +1,56 @@
+@using GitHubViewer.Authentication;
+
+@attribute [Route(Routes.SignOut)]
+@attribute [Authorize]
+
+@inject IGitHubAuthenticator Authenticator
+@inject ILogger<SignOut> Logger
+@inject IStringLocalizer<SignOut> L
+@inject NavigationManager Navigation
+
+<MudCard>
+    @if (!String.IsNullOrEmpty(Error))
+    {
+        <ErrorPanel Class="mb-4">
+            <MudText>@Error</MudText>
+        </ErrorPanel>
+    }
+
+    <MudCheckBox @bind-Checked="RemovesPersistentData" Label="@L["RemovesPersistentDataLabel"]" />
+    <MudButton OnClick="OnSubmit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SignOutButton"]</MudButton>
+
+
+    <MudOverlay @bind-Visible="IsLoading" DarkBackground="true">
+        <MudStack>
+            <MudProgressCircular Class="align-self-center" Color="Color.Secondary" Indeterminate="true" />
+            @L["SignOutProgress"]
+        </MudStack>
+    </MudOverlay>
+</MudCard>
+
+@code {
+    string? Error { get; set; }
+
+    bool IsLoading { get; set; } = false;
+
+    bool RemovesPersistentData { get; set; } = false;
+
+    async Task OnSubmit()
+    {
+        IsLoading = true;
+        try
+        {
+            await Authenticator.SignOutAsync(RemovesPersistentData);
+            Navigation.NavigateTo(Routes.SignIn, forceLoad: false, replace: true);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            Logger.LogError(ex, "Failed to sign-out.");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

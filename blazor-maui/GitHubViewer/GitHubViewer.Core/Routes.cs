@@ -8,5 +8,6 @@ public static class Routes
 {
 	public const string Home = "/";
 	public const string SignIn = "/sign-in";
+	public const string SignOut = "/sign-out";
 	public const string Issues = "/issues";
 }

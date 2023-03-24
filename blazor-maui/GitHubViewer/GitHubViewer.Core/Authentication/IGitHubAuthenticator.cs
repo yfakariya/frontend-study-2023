@@ -19,5 +19,5 @@ public interface IGitHubAuthenticator
 
 	ValueTask<ClaimsPrincipal> SignInAsync(string clientId, string clientSecret, bool persists, CancellationToken cancellationToken = default);
 
-	ValueTask SignOutAsync(CancellationToken cancellationToken = default);
+	ValueTask SignOutAsync(bool clearsPersistedData, CancellationToken cancellationToken = default);
 }
