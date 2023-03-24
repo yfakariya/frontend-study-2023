@@ -1,16 +1,18 @@
 @inherits LayoutComponentBase
 
+@inject IStringLocalizer<MainLayout> L
+
 <MudRTLProvider>
-    <MudThemeProvider @ref="_themeProvider" @bind-IsDarkMode="_isDarkMode" />
+    <MudThemeProvider @ref="ThemeProvider" @bind-IsDarkMode="IsDarkMode" />
     <MudDialogProvider />
     <MudSnackbarProvider />
 
     <MudLayout>
         <MudAppBar>
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
-            <MudText Typo="Typo.h5" Class="ml-3">GitHub Viewer</MudText>
+            <MudText Typo="Typo.h5" Class="ml-3">@L["Title"]</MudText>
         </MudAppBar>
-        <MudDrawer @bind-Open="@_isDrawerOpen" ClipMode="DrawerClipMode.Always">
+        <MudDrawer @bind-Open="@IsDrawerOpen" ClipMode="DrawerClipMode.Always">
             <NavMenu />
         </MudDrawer>
         <MudMainContent>
@@ -22,22 +24,23 @@
 </MudRTLProvider>
 
 @code {
-    private MudThemeProvider _themeProvider = null!;
-    private bool _isDarkMode;
+    MudThemeProvider ThemeProvider { get; set; } = null!;
 
-    private bool _isDrawerOpen = false;
+    bool IsDarkMode { get; set; }
+
+    bool IsDrawerOpen { get; set; } = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _isDarkMode = await _themeProvider.GetSystemPreference();
-            await _themeProvider.WatchSystemPreference(
+            IsDarkMode = await ThemeProvider.GetSystemPreference();
+            await ThemeProvider.WatchSystemPreference(
 #pragma warning disable CS1998
                 async (isDarkmode) =>
 #pragma warning restore CS1998
                 {
-                    _isDarkMode = isDarkmode;
+                    IsDarkMode = isDarkmode;
                     StateHasChanged();
                 });
             StateHasChanged();
@@ -46,6 +49,6 @@
 
     private void ToggleDrawer()
     {
-        _isDrawerOpen = !_isDrawerOpen;
+        IsDrawerOpen = !IsDrawerOpen;
     }
 }
