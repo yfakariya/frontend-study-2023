@@ -79,6 +79,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="AppResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppResource.resx</DependentUpon>
+    </Compile>
     <Compile Update="Authentication\AuthenticationResource.Designer.cs">
       <DependentUpon>AuthenticationResource.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -87,6 +92,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="AppResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Authentication\AuthenticationResource.resx">
       <LastGenOutput>AuthenticationResource.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
