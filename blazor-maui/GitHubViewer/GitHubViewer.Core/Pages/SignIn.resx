@@ -129,6 +129,9 @@
   <data name="SignInButton" xml:space="preserve">
     <value>Sign in</value>
   </data>
+  <data name="SingInProgress" xml:space="preserve">
+    <value>Wait for the web browser to be opened, then follow the instruction shown.</value>
+  </data>
   <data name="ValidationErrorHeader" xml:space="preserve">
     <value>There are some validation error(s).</value>
   </data>

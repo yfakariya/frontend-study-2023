@@ -49,11 +49,17 @@
             <MudCheckBox @bind-Checked="Model.Persists" Label="@L["PersistsLabel"]" />
         </MudCardContent>
         <MudCardActions>
-            @* TODO: Guard... *@
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SignInButton"]</MudButton>
         </MudCardActions>
 
     </EditForm>
+
+    <MudOverlay @bind-Visible="IsLoading" DarkBackground="true">
+        <MudStack>
+            <MudProgressCircular Class="align-self-center" Color="Color.Secondary" Indeterminate="true" />
+            @L["SingInProgress"]
+        </MudStack>
+    </MudOverlay>
 </MudCard>
 
 @code {
@@ -65,6 +71,8 @@
     ViewModel Model { get; set; } = new ViewModel();
 
     bool IsInvalid { get; set; } = false;
+
+    bool IsLoading { get; set; } = false;
 
     public async Task ClickGitHubLink()
     {
@@ -89,6 +97,7 @@
         IsInvalid = false;
         try
         {
+            IsLoading = true;
             await Authenticator.SignInAsync(Model.ClientId, Model.ClientSecret, Model.Persists);
             Navigation.NavigateTo(Routes.Home, forceLoad: false, replace: true);
         }
@@ -96,6 +105,10 @@
         {
             Error = ex.Message;
             Logger.LogError(ex, "Failed to sign-in.");
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

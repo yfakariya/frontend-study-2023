@@ -129,6 +129,9 @@
   <data name="SignInButton" xml:space="preserve">
     <value>サインイン</value>
   </data>
+  <data name="SingInProgress" xml:space="preserve">
+    <value>Webブラウザーが開くまでお待ちください。開いたら、表示された指示に従ってください。</value>
+  </data>
   <data name="ValidationErrorHeader" xml:space="preserve">
     <value>検証に失敗した項目があります。</value>
   </data>
