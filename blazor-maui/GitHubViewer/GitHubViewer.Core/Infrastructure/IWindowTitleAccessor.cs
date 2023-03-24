@@ -2,14 +2,12 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-namespace GitHubViewer;
-
-public partial class App : Application
+namespace GitHubViewer.Infrastructure
 {
-	public App()
+	public interface IWindowTitleAccessor
 	{
-		InitializeComponent();
+		bool HasWindow { get; }
 
-		MainPage = new MainPage();
+		string Title { get; set; }
 	}
 }

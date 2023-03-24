@@ -25,7 +25,9 @@ public static class MauiProgram
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 		ApplicationSetUp.RegisterServices(builder.Services, useScoped: false);
+
 		builder.Services.AddSingleton<IBrowserLauncher, MauiBrowserLauncher>();
+		builder.Services.AddSingleton<IWindowTitleAccessor, MauiWindowTitleAccessor>();
 
 		builder.Services.AddSingleton<CredentialsRepository, MauiSecureStorageCredentialsRepository>();
 		builder.Services.AddSingleton<IGitHubAuthenticator, MauiGitHubAuthenticator>();

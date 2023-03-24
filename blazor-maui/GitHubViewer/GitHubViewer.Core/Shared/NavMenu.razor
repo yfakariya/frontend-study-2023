@@ -1,15 +1,15 @@
 @inject IStringLocalizer<NavMenu> L
 
 <MudNavMenu>
-    <MudNavLink Href="@Routes.Home" Match="NavLinkMatch.All">@L["Home"]</MudNavLink>
+    <MudNavLink Href="@Routes.Home" Match="NavLinkMatch.All">@L[Routes.Home]</MudNavLink>
     @if (IsAnonymous)
     {
-        <MudNavLink Href="@Routes.SignIn" Match="NavLinkMatch.Prefix">@L["SignIn"]</MudNavLink>
+        <MudNavLink Href="@Routes.SignIn" Match="NavLinkMatch.Prefix">@L[Routes.SignIn]</MudNavLink>
     }
     else
     {
-        <MudNavLink Href="@Routes.Issues" Match="NavLinkMatch.Prefix">@L["Issues"]</MudNavLink>
-        <MudNavLink Href="@Routes.SignOut" Match="NavLinkMatch.Prefix">@L["SignOut"]</MudNavLink>
+        <MudNavLink Href="@Routes.Issues" Match="NavLinkMatch.Prefix">@L[Routes.Issues]</MudNavLink>
+        <MudNavLink Href="@Routes.SignOut" Match="NavLinkMatch.Prefix">@L[Routes.SignOut]</MudNavLink>
     }
 </MudNavMenu>
 

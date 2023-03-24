@@ -1,6 +1,12 @@
+@using GitHubViewer.Infrastructure;
+@using System.Runtime.InteropServices;
+
 @inherits LayoutComponentBase
 
 @inject IStringLocalizer<MainLayout> L
+@inject IStringLocalizer<NavMenu> RoutesLocalization
+@inject IWindowTitleAccessor WindowTitleAccessor
+@inject NavigationManager Navigation
 
 <MudRTLProvider>
     <MudThemeProvider @ref="ThemeProvider" @bind-IsDarkMode="IsDarkMode" />
@@ -10,7 +16,7 @@
     <MudLayout>
         <MudAppBar>
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
-            <MudText Typo="Typo.h5" Class="ml-3">@L["Title"]</MudText>
+            <MudText Typo="Typo.h5" Class="ml-3">@Title</MudText>
         </MudAppBar>
         <MudDrawer @bind-Open="@IsDrawerOpen" ClipMode="DrawerClipMode.Always">
             <NavMenu />
@@ -24,11 +30,36 @@
 </MudRTLProvider>
 
 @code {
+    static readonly Dictionary<string, Func<IReadOnlyDictionary<string, object>, string>> CustomTitleFactories =
+        // Set custom page title handler here.
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+        };
+
     MudThemeProvider ThemeProvider { get; set; } = null!;
 
     bool IsDarkMode { get; set; }
 
     bool IsDrawerOpen { get; set; } = false;
+
+    string Title { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        var route = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
+        var routeData = (Body?.Target as AuthorizeRouteView)?.RouteData;
+
+        var title =
+            (routeData != null && CustomTitleFactories.TryGetValue(route, out var customTitleFactory))
+            ? customTitleFactory(routeData.RouteValues)
+            : null;
+
+        var pageTitle = title ?? RoutesLocalization[route.ToLowerInvariant()];
+        var appTitle = $"{pageTitle} - {L["Title"]}";
+
+        Title = WindowTitleAccessor.HasWindow ? pageTitle : appTitle;
+        WindowTitleAccessor.Title = appTitle;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
