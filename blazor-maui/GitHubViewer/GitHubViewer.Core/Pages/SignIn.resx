@@ -124,7 +124,7 @@
     <value>for details.</value>
   </data>
   <data name="PersistsLabel" xml:space="preserve">
-    <value>Save these values</value>
+    <value>Save these credentials for next sign-in</value>
   </data>
   <data name="SignInButton" xml:space="preserve">
     <value>Sign in</value>

@@ -124,7 +124,7 @@
     <value>を参照してください。</value>
   </data>
   <data name="PersistsLabel" xml:space="preserve">
-    <value>これらの値を保存する</value>
+    <value>次回のサインインのためにこれらの資格情報を保存する</value>
   </data>
   <data name="SignInButton" xml:space="preserve">
     <value>サインイン</value>
