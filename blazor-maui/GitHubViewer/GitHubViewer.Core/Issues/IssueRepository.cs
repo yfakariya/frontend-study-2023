@@ -29,6 +29,7 @@ namespace GitHubViewer.Issues
 				{
 					StartPage = page,
 					PageSize = condition.IssuesPerPage,
+					PageCount = 1,
 				};
 
 			Task<IReadOnlyList<Issue>> task;
@@ -71,14 +72,7 @@ namespace GitHubViewer.Issues
 				task = client.GetAllForRepository(condition.Owner!, condition.Repository!, issueRequest, apiOptions);
 			}
 
-			try
-			{
-				return await task.ConfigureAwait(false);
-			}
-			catch (NotFoundException)
-			{
-				return Array.Empty<Issue>();
-			}
+			return await task.ConfigureAwait(false);
 		}
 	}
 }
