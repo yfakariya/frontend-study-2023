@@ -4,6 +4,8 @@
 
 using GitHubViewer.Authentication;
 using GitHubViewer.Infrastructure;
+using GitHubViewer.Issues;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
@@ -14,7 +16,14 @@ namespace GitHubViewer;
 
 public static class ApplicationSetUp
 {
-	public static void RegisterServices(IServiceCollection services, bool useScoped)
+	public static void RegisterServices(
+		IServiceCollection services,
+		Registration<IBrowserLauncher> browserLauncherRegistration,
+		Registration<IWindowTitleAccessor> windowTitleAccessorRegistration,
+		Registration<CredentialsRepository> credentialsRepositoryRegistration,
+		Registration<IGitHubAuthenticator> gitHubAuthenticatorRegistration,
+		Registration<AuthenticationStateProvider> authenticationStateProviderRegistration
+	)
 	{
 		services.AddLocalization();
 		services.AddLogging(logging =>
@@ -36,22 +45,18 @@ public static class ApplicationSetUp
 			)
 		);
 
-		if (useScoped)
-		{
 		services.AddScoped<BasicAuthenticationApiConnectionFactory>();
 		services.AddScoped<OAuth2ApiConnectionFactory>();
 		services.AddScoped<GitHubUserProfile>();
 		services.AddScoped<GitHubTokenInformation>();
-		}
-		else
-		{
-			services.AddScoped<BasicAuthenticationApiConnectionFactory>();
-			services.AddScoped<OAuth2ApiConnectionFactory>();
-			services.AddSingleton<GitHubUserProfile>();
-			services.AddSingleton<GitHubTokenInformation>();
-		}
 
 		services.AddScoped<IIssueRepository, IssueRepository>();
+
+		browserLauncherRegistration.Register(services);
+		windowTitleAccessorRegistration.Register(services);
+		credentialsRepositoryRegistration.Register(services);
+		gitHubAuthenticatorRegistration.Register(services);
+		authenticationStateProviderRegistration.Register(services);
 
 		services.AddMudServices();
 	}

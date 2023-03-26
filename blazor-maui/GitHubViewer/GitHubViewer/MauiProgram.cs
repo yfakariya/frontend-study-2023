@@ -24,14 +24,14 @@ public static class MauiProgram
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-		ApplicationSetUp.RegisterServices(builder.Services, useScoped: false);
-
-		builder.Services.AddSingleton<IBrowserLauncher, MauiBrowserLauncher>();
-		builder.Services.AddSingleton<IWindowTitleAccessor, MauiWindowTitleAccessor>();
-
-		builder.Services.AddSingleton<CredentialsRepository, MauiSecureStorageCredentialsRepository>();
-		builder.Services.AddSingleton<IGitHubAuthenticator, MauiGitHubAuthenticator>();
-		builder.Services.AddSingleton<AuthenticationStateProvider, GitHubAuthenticationStateProvider>();
+		ApplicationSetUp.RegisterServices(
+			builder.Services,
+			Registration<IBrowserLauncher>.Singleton<MauiBrowserLauncher>(),
+			Registration<IWindowTitleAccessor>.Singleton<MauiWindowTitleAccessor>(),
+			Registration<CredentialsRepository>.Singleton<MauiSecureStorageCredentialsRepository>(),
+			Registration<IGitHubAuthenticator>.Singleton<MauiGitHubAuthenticator>(),
+			Registration<AuthenticationStateProvider>.Singleton<GitHubAuthenticationStateProvider>()
+		);
 
 #if WINDOWS
 		// Due to WindowsAppSDK issue (https://github.com/microsoft/WindowsAppSDK/issues/441),
