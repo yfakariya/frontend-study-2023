@@ -8,5 +8,5 @@ internal interface IOAuthHelper : IDisposable
 {
 	IdentityModel.OidcClient.Browser.IBrowser Browser { get; }
 
-	AuthorizationCodeFlowInformation Prepare();
+	ValueTask<AuthorizationCodeFlowInformation> PrepareAsync(CancellationToken cancellationToken = default);
 }

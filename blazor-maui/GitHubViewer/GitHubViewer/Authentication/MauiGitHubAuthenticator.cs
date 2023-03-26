@@ -90,7 +90,7 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 				)
 			)
 			{
-				var authorizationCodeFlowInformation = helper.Prepare();
+				var authorizationCodeFlowInformation = await helper.PrepareAsync(cancellationToken).ConfigureAwait(false);
 
 				var oidcClient =
 					new OidcClient(

@@ -18,12 +18,10 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 {
 	private readonly HttpListener _listener;
 	private readonly Func<Uri, MessageAndHttpCode> _responseProducer;
+	private readonly int _minimumPortInclusive;
+	private readonly int _maximumPortInclusive;
+	private readonly string _path;
 	private readonly ILogger _logger;
-	private readonly TaskCompletionSource _ready;
-
-	public string ListeningUrl { get; }
-
-	public Task Ready => _ready.Task;
 
 	public HttpListenerUriInterceptor(
 		int minimumPortInclusive,
@@ -46,12 +44,13 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 			path += "/";
 		}
 
+		_path = path;
+
 		_responseProducer = responseProducer;
-		_ready = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+		_minimumPortInclusive = minimumPortInclusive;
+		_maximumPortInclusive = maximumPortInclusive;
 		_listener = new HttpListener();
-		ListeningUrl = SetupHttpListener(_listener, path, minimumPortInclusive, maximumPortInclusive);
 		_logger = logger;
-		logger.StartListening(ListeningUrl);
 	}
 
 	public void Dispose()
@@ -63,42 +62,44 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 		catch { }
 	}
 
-	// Internal for testing
-	internal static string SetupHttpListener(HttpListener listener, string path, int minimumPortInclusive, int maximumPortInclusive)
-	{
-		foreach (var port in Enumerable.Range(minimumPortInclusive, maximumPortInclusive - minimumPortInclusive + 1))
+	public ValueTask<string> PrepareAsync(CancellationToken cancellationToken  = default)
+	{ 
+		foreach (var port in Enumerable.Range(_minimumPortInclusive, _maximumPortInclusive - _minimumPortInclusive + 1))
 		{
-			var prefix = $"http://127.0.0.1:{port}{path}";
-			listener.Prefixes.Clear();
-			listener.Prefixes.Add(prefix);
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var prefix = $"http://127.0.0.1:{port}{_path}";
+			_listener.Prefixes.Clear();
+			_listener.Prefixes.Add(prefix);
 
 			try
 			{
-				listener.Start();
-				return prefix;
+				_listener.Start();
+				_logger.StartListening(prefix);
+				return ValueTask.FromResult(prefix);
 			}
 			catch { }
 		}
 
 		throw new HttpListenerException(
-			unchecked((int)0xC00D158B), // NS_E_PORT_IN_USE_HTTP
-			$"Failed to assign port to HttpListener between {minimumPortInclusive} and {maximumPortInclusive}, inclusive."
+			183, // ERROR_ALREADY_EXISTS
+			$"Failed to assign port to HttpListener between {_minimumPortInclusive} and {_maximumPortInclusive}, inclusive."
 		);
 	}
 
-	public async Task<Uri> ListenToSingleRequestAndRespondAsync(CancellationToken cancellationToken)
+	public async Task<Uri> ListenToSingleRequestAndRespondAsync(CancellationToken cancellationToken = default)
 	{
+		cancellationToken.ThrowIfCancellationRequested();
+
 		try
 		{
-			var contextTask = _listener.GetContextAsync().ConfigureAwait(false);
-
-			_ready.SetResult();
+			var context = await _listener.GetContextAsync().ConfigureAwait(false);
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var context = await contextTask;
 			await RespondAsync(context, cancellationToken).ConfigureAwait(false);
-			_logger.ListenerReceivedMessage(ListeningUrl);
+
+			_logger.ListenerReceivedMessage(_listener.Prefixes.First());
 
 			// the request URL should now contain the auth code and pkce
 			return context.Request.Url!;
@@ -114,7 +115,7 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 			if (ex is HttpListenerException)
 			{
 				throw new AuthenticationException(
-					$"An HttpListenerException occurred while listening on {ListeningUrl} for the system browser to complete the login. " +
+					$"An HttpListenerException occurred while listening on {_listener.Prefixes.First()} for the system browser to complete the login. " +
 					"Possible cause and mitigation: the app is unable to listen on the specified URL; " +
 					"run 'netsh http add iplisten 127.0.0.1' from the Admin command prompt.",
 					ex

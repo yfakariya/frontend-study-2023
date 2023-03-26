@@ -13,12 +13,7 @@ namespace GitHubViewer.Authentication;
 /// </summary>
 internal interface IUriInterceptor : IDisposable
 {
-	string ListeningUrl { get; }
-
-	/// <summary>
-	/// Gets a pending <see cref="Task"/> to ready to handle incoming http request.
-	/// </summary>
-	Task Ready { get; }
+	ValueTask<string> PrepareAsync(CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Gets a pending <see cref="Task{T}"/> to get the entire url, including query params.

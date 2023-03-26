@@ -23,7 +23,8 @@ internal sealed class MauiAuthenticationBrowser : IdentityModel.OidcClient.Brows
 
 	void IDisposable.Dispose() { }
 
-	public AuthorizationCodeFlowInformation Prepare() => new(_redirectUri.OriginalString);
+	public ValueTask<AuthorizationCodeFlowInformation> PrepareAsync(CancellationToken cancellationToken = default)
+		=> ValueTask.FromResult(new AuthorizationCodeFlowInformation(_redirectUri.OriginalString));
 
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{

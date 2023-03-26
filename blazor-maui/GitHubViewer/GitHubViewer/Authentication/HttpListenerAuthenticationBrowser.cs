@@ -46,12 +46,11 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 	public void Dispose()
 		=> _interceptor.Dispose();
 
-	public AuthorizationCodeFlowInformation Prepare()
-		=> new AuthorizationCodeFlowInformation(_interceptor.ListeningUrl);
+	public async ValueTask<AuthorizationCodeFlowInformation> PrepareAsync(CancellationToken cancellationToken = default)
+		=> new AuthorizationCodeFlowInformation(await _interceptor.PrepareAsync(cancellationToken).ConfigureAwait(false));
 
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{
-		var redirectUri = new Uri(options.EndUrl);
 		cancellationToken.ThrowIfCancellationRequested();
 
 		try
@@ -59,8 +58,6 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 			var interception = _interceptor.ListenToSingleRequestAndRespondAsync(cancellationToken).ConfigureAwait(false);
 
 			cancellationToken.ThrowIfCancellationRequested();
-
-			await _interceptor.Ready.ConfigureAwait(false);
 
 			await _defaultOSBrowser.OpenAsync(options.StartUrl).ConfigureAwait(false);
 
