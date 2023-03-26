@@ -38,10 +38,10 @@ public static class ApplicationSetUp
 
 		if (useScoped)
 		{
-			services.AddScoped<BasicAuthenticationApiConnectionFactory>();
-			services.AddScoped<OAuth2ApiConnectionFactory>();
-			services.AddScoped<GitHubUserProfile>();
-			services.AddScoped<GitHubTokenInformation>();
+		services.AddScoped<BasicAuthenticationApiConnectionFactory>();
+		services.AddScoped<OAuth2ApiConnectionFactory>();
+		services.AddScoped<GitHubUserProfile>();
+		services.AddScoped<GitHubTokenInformation>();
 		}
 		else
 		{
@@ -50,6 +50,8 @@ public static class ApplicationSetUp
 			services.AddSingleton<GitHubUserProfile>();
 			services.AddSingleton<GitHubTokenInformation>();
 		}
+
+		services.AddScoped<IIssueRepository, IssueRepository>();
 
 		services.AddMudServices();
 	}

@@ -7,7 +7,7 @@ using Octokit;
 
 namespace GitHubViewer.Issues
 {
-	internal sealed class IssueRepository
+	internal sealed class IssueRepository : IIssueRepository
 	{
 		private readonly OAuth2ApiConnectionFactory _connectionFactory;
 		public IssueRepository(OAuth2ApiConnectionFactory connectionFactory)

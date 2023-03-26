@@ -6,7 +6,7 @@
 
 @inject ILogger<Issues> Logger
 @inject IStringLocalizer<Issues> L
-@inject IssueRepository Repository
+@inject IIssueRepository IssueRepository
 @inject NavigationManager Navigation
 
 <MudPaper Class="pa-4">
@@ -18,17 +18,17 @@
 
                     <MudCard>
                         <MudCardContent>
-                            @if (IsInvalid)
-                            {
+                        @if (IsInvalid)
+                        {
                                 <ErrorPanel Class="mb-4">
                                     <MudStack>
                                         @L["ValidationErrorHeader"]
                                         <ValidationSummary />
                                     </MudStack>
                                 </ErrorPanel>
-                            }
-                            @* TODO(yfakariya): labels, milestone *@
-                            @* TODO(yfakariya): searchable dropdown *@
+                        }
+                        @* TODO(yfakariya): labels, milestone *@
+                        @* TODO(yfakariya): searchable dropdown *@
                             <MudTextField @bind-Value="Model.Repository" Label="Repository (optional)" HelperText="Target repository name with \'user/repo\' format to be searched." />
                             <MudSelect @bind-Value="Model.State" Label="Issue state" HelperText="Select issue state to be shown. Default is 'Open'.">
                                 <MudSelectItem Value="@ItemStateFilter.Open" />
@@ -54,7 +54,7 @@
                             <MudNumericField HideSpinButtons="true" Min="1" Max="100" @bind-Value="Model.IssuesPerPage" Label="Issues per pages" HintText="Maximum issues shown in a page. Default is 20." />
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SearchButton"]</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SearchButton"]</MudButton>
                         </MudCardActions>
                     </MudCard>
                 </EditForm>
@@ -86,9 +86,9 @@
                         <MudStack>
                             <MudText Typo="Typo.h5">@context.Title</MudText>
                             <MudText Typo="Typo.subtitle1">#@context.Number at @(context.Repository.FullName), created: @(context.CreatedAt), updated: @(context.UpdatedAt)</MudText>
-                            </MudStack>
+                        </MudStack>
                         </MudListItem>
-                    </MudVirtualize>
+                </MudVirtualize>
                 </MudList>
         }
 
@@ -131,17 +131,17 @@
 
             SearchedIssues =
                 (await Repository.GetIssuesAsync(
-                    new IssueSearchCondition
-                        {
-                            IssuesPerPage = Model.IssuesPerPage,
-                            Owner = repositoryTokens.Length == 2 ? repositoryTokens[0] : null,
-                            Repository = repositoryTokens.Length == 2 ? repositoryTokens[1] : null,
-                            Since = Model.Since,
-                            SortDirection = Model.SortDirection,
-                            SortProperty = Model.SortProperty,
-                            State = Model.State
-                        },
-                    Page
+                     new IssueSearchCondition
+                         {
+                             IssuesPerPage = Model.IssuesPerPage,
+                             Owner = repositoryTokens.Length == 2 ? repositoryTokens[0] : null,
+                             Repository = repositoryTokens.Length == 2 ? repositoryTokens[1] : null,
+                             Since = Model.Since,
+                             SortDirection = Model.SortDirection,
+                             SortProperty = Model.SortProperty,
+                             State = Model.State
+                         },
+                     Page
                 )).ToArray();
         }
         catch (Exception ex)
@@ -161,9 +161,9 @@
         SelectedIssueListItem = null;
 
         if (issue != null)
-        {
-            Navigation.NavigateTo($"{Routes.Issues}/{issue.Repository.FullName}/{issue.Number}?title={Uri.EscapeDataString(issue.Title)}");
-        }
+    {
+        Navigation.NavigateTo($"{Routes.Issues}/{issue.Repository.FullName}/{issue.Number}?title={Uri.EscapeDataString(issue.Title)}");
+    }
     }
 
     class ViewModel
