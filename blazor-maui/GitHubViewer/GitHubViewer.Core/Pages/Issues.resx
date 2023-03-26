@@ -117,40 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="IssuesPerPage.Description" xml:space="preserve">
-    <value>1ページに表示される課題の最大数。既定値は 20 です。</value>
+  <data name="EmptyPlaceholder" xml:space="preserve">
+    <value>There are no issues found.</value>
   </data>
-  <data name="IssuesPerPage.Name" xml:space="preserve">
-    <value>ページあたり課題数</value>
+  <data name="NextPage" xml:space="preserve">
+    <value>Next</value>
   </data>
-  <data name="Repository.Description" xml:space="preserve">
-    <value>検索対象のリポジトリの名前。「{オーナー}/{リポジトリ名}」形式です。</value>
+  <data name="PageTemplate" xml:space="preserve">
+    <value>Page {0}</value>
   </data>
-  <data name="Repository.Name" xml:space="preserve">
-    <value>リポジトリ（省略可能）</value>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Previous</value>
   </data>
-  <data name="Since.Description" xml:space="preserve">
-    <value>表示対象とする課題の最も古い日時を指定してください。</value>
+  <data name="SearchButton" xml:space="preserve">
+    <value>Search</value>
   </data>
-  <data name="Since.Name" xml:space="preserve">
-    <value>表示対象の開始日時（省略可能）</value>
+  <data name="SearchConditionHeader" xml:space="preserve">
+    <value>Search Condition</value>
   </data>
-  <data name="SortDirection.Description" xml:space="preserve">
-    <value>「並び替えのキー」で並び替えられる課題の並び順を選択してください。既定値は「降順」です。</value>
+  <data name="SearchResultHeaderTemplate" xml:space="preserve">
+    <value>Search Result ({0} items)</value>
   </data>
-  <data name="SortDirection.Name" xml:space="preserve">
-    <value>一覧の並び順</value>
-  </data>
-  <data name="SortProperty.Description" xml:space="preserve">
-    <value>課題の並び替えのキーを選択してください。既定値は「作成日時」です。</value>
-  </data>
-  <data name="SortProperty.Name" xml:space="preserve">
-    <value>並び替えのキー</value>
-  </data>
-  <data name="State.Description" xml:space="preserve">
-    <value>表示する課題の状態。既定値は「オープン」です。</value>
-  </data>
-  <data name="State.Name" xml:space="preserve">
-    <value>課題の状態</value>
+  <data name="ValidationErrorHeader" xml:space="preserve">
+    <value>There are some validation error(s).</value>
   </data>
 </root>

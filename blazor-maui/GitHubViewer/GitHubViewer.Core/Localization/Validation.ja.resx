@@ -120,6 +120,9 @@
   <data name="MinLengthAttribute" xml:space="preserve">
     <value>「{0}」は{1}文字以上になっていなければなりません。</value>
   </data>
+  <data name="RepositoryRegularExpressionAttribute" xml:space="preserve">
+    <value>「{0}」は「{{オーナー}}/{{リポジトリ名}}」形式になっていなければなりません。</value>
+  </data>
   <data name="RequiredAttribute" xml:space="preserve">
     <value>「{0}」は必須です。</value>
   </data>

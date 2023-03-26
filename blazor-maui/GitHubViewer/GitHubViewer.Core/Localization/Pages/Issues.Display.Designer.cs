@@ -59,5 +59,113 @@ namespace GitHubViewer.Localization.Pages {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum issues shown in a page. Default is 20..
+        /// </summary>
+        public static string IssuesPerPage_Description {
+            get {
+                return ResourceManager.GetString("IssuesPerPage.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Issues per page.
+        /// </summary>
+        public static string IssuesPerPage_Name {
+            get {
+                return ResourceManager.GetString("IssuesPerPage.Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target repository name with &quot;{owner}/{repository}&quot; format to be searched..
+        /// </summary>
+        public static string Repository_Description {
+            get {
+                return ResourceManager.GetString("Repository.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository (optional).
+        /// </summary>
+        public static string Repository_Name {
+            get {
+                return ResourceManager.GetString("Repository.Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specify oldest date and time of issues to be shown..
+        /// </summary>
+        public static string Since_Description {
+            get {
+                return ResourceManager.GetString("Since.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Since (optional).
+        /// </summary>
+        public static string Since_Name {
+            get {
+                return ResourceManager.GetString("Since.Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select direction of issues list which ordered by sort key. Default is &quot;Descsending&quot;..
+        /// </summary>
+        public static string SortDirection_Description {
+            get {
+                return ResourceManager.GetString("SortDirection.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List direction.
+        /// </summary>
+        public static string SortDirection_Name {
+            get {
+                return ResourceManager.GetString("SortDirection.Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select sort key of issues. Default is &quot;Created date/time&quot;..
+        /// </summary>
+        public static string SortProperty_Description {
+            get {
+                return ResourceManager.GetString("SortProperty.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort key.
+        /// </summary>
+        public static string SortProperty_Name {
+            get {
+                return ResourceManager.GetString("SortProperty.Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select issue state to be shown. Default is &quot;Open&quot;..
+        /// </summary>
+        public static string State_Description {
+            get {
+                return ResourceManager.GetString("State.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Issue state.
+        /// </summary>
+        public static string State_Name {
+            get {
+                return ResourceManager.GetString("State.Name", resourceCulture);
+            }
+        }
     }
 }

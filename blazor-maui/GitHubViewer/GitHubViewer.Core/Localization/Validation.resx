@@ -120,6 +120,9 @@
   <data name="MinLengthAttribute" xml:space="preserve">
     <value>The field {0} must have a minimum length of '{1}'.</value>
   </data>
+  <data name="RepositoryRegularExpressionAttribute" xml:space="preserve">
+    <value>The field {0} must be "{{owner}}/{{repository}}" form.</value>
+  </data>
   <data name="RequiredAttribute" xml:space="preserve">
     <value>The {0} field is required.</value>
   </data>

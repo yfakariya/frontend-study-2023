@@ -22,24 +22,24 @@ namespace GitHubViewer.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Validation {
+    public class Enum_Display {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Validation() {
+        internal Enum_Display() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GitHubViewer.Localization.Validation", typeof(Validation).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GitHubViewer.Localization.Enum.Display", typeof(Enum_Display).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace GitHubViewer.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,29 +61,74 @@ namespace GitHubViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The field {0} must have a minimum length of &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Commented date/time.
         /// </summary>
-        internal static string MinLengthAttribute {
+        public static string IssueSort_Comments {
             get {
-                return ResourceManager.GetString("MinLengthAttribute", resourceCulture);
+                return ResourceManager.GetString("IssueSort.Comments", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The field {0} must be &quot;{{owner}}/{{repository}}&quot; form..
+        ///   Looks up a localized string similar to Created date/time.
         /// </summary>
-        internal static string RepositoryRegularExpressionAttribute {
+        public static string IssueSort_Created {
             get {
-                return ResourceManager.GetString("RepositoryRegularExpressionAttribute", resourceCulture);
+                return ResourceManager.GetString("IssueSort.Created", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field is required..
+        ///   Looks up a localized string similar to Updated date/time.
         /// </summary>
-        internal static string RequiredAttribute {
+        public static string IssueSort_Updated {
             get {
-                return ResourceManager.GetString("RequiredAttribute", resourceCulture);
+                return ResourceManager.GetString("IssueSort.Updated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string ItemStateFilter_All {
+            get {
+                return ResourceManager.GetString("ItemStateFilter.All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed.
+        /// </summary>
+        public static string ItemStateFilter_Closed {
+            get {
+                return ResourceManager.GetString("ItemStateFilter.Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string ItemStateFilter_Open {
+            get {
+                return ResourceManager.GetString("ItemStateFilter.Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ascending.
+        /// </summary>
+        public static string SortDirection_Ascending {
+            get {
+                return ResourceManager.GetString("SortDirection.Ascending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descending.
+        /// </summary>
+        public static string SortDirection_Descending {
+            get {
+                return ResourceManager.GetString("SortDirection.Descending", resourceCulture);
             }
         }
     }
