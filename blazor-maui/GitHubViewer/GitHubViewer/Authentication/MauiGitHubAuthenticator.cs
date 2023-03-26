@@ -99,7 +99,7 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 							Authority = authorityAndIssuer,
 							ClientId = clientId,
 							ClientSecret = clientSecret,
-							Scope = String.Empty,
+							Scope = "public_repo",
 							RedirectUri = authorizationCodeFlowInformation.RedirectUri,
 							Browser = helper.Browser,
 							HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),

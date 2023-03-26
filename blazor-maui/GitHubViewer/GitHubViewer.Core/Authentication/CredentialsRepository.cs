@@ -62,7 +62,8 @@ public abstract class CredentialsRepository
 			new InMemoryCredentialStore(
 				underlying == null
 				? Credentials.Anonymous
-				: new Credentials(underlying.AccessToken, AuthenticationType.Oauth)
+				// We must send as Authorization: Bearer
+				: new Credentials(underlying.AccessToken, AuthenticationType.Bearer)
 			);
 	}
 }
