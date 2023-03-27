@@ -120,6 +120,12 @@
   <data name="EmptyPlaceholder" xml:space="preserve">
     <value>一致する課題がありません。</value>
   </data>
+  <data name="IssueAttributesTemplate" xml:space="preserve">
+    <value>{0} により {1:F} に {2} で報告</value>
+  </data>
+  <data name="IssueTitleTemplate" xml:space="preserve">
+    <value>#{0}：{1}</value>
+  </data>
   <data name="NextPage" xml:space="preserve">
     <value>次へ</value>
   </data>

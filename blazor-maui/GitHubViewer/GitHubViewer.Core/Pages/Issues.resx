@@ -120,6 +120,12 @@
   <data name="EmptyPlaceholder" xml:space="preserve">
     <value>There are no issues found.</value>
   </data>
+  <data name="IssueAttributesTemplate" xml:space="preserve">
+    <value>reported by {0} at {1:F}, in {2}</value>
+  </data>
+  <data name="IssueTitleTemplate" xml:space="preserve">
+    <value>#{0}: {1}</value>
+  </data>
   <data name="NextPage" xml:space="preserve">
     <value>Next</value>
   </data>
