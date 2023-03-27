@@ -38,9 +38,9 @@
 
                     <MudItem xs="12" lg="6" xl="4" xxl="3">
                         <MudSelect @bind-Value="Model.State" For="() => Model.State" Label="@Label.FromDisplay(() => Model.State)" HelperText="@Description.FromDisplay(() => Model.State)">
-                            <MudSelectItem Value="@Octokit.ItemStateFilter.Open">@Enum_Display.ItemStateFilter_Open</MudSelectItem>
-                            <MudSelectItem Value="@Octokit.ItemStateFilter.Closed">@Enum_Display.ItemStateFilter_Closed</MudSelectItem>
-                            <MudSelectItem Value="@Octokit.ItemStateFilter.All">@Enum_Display.ItemStateFilter_All</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.ItemStateFilter.Open">@EnumDisplay.ItemStateFilter_Open</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.ItemStateFilter.Closed">@EnumDisplay.ItemStateFilter_Closed</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.ItemStateFilter.All">@EnumDisplay.ItemStateFilter_All</MudSelectItem>
                         </MudSelect>
                     </MudItem>
 
@@ -50,16 +50,16 @@
 
                     <MudItem xs="12" lg="6" xl="4" xxl="3">
                         <MudSelect @bind-Value="Model.SortProperty" For="() => Model.SortProperty" Label="@Label.FromDisplay(() => Model.SortProperty)" HelperText="@Description.FromDisplay(() => Model.SortProperty)">
-                            <MudSelectItem Value="@Octokit.IssueSort.Created">@Enum_Display.IssueSort_Created</MudSelectItem>
-                            <MudSelectItem Value="@Octokit.IssueSort.Updated">@Enum_Display.IssueSort_Updated</MudSelectItem>
-                            <MudSelectItem Value="@Octokit.IssueSort.Comments">@Enum_Display.IssueSort_Comments</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.IssueSort.Created">@EnumDisplay.IssueSort_Created</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.IssueSort.Updated">@EnumDisplay.IssueSort_Updated</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.IssueSort.Comments">@EnumDisplay.IssueSort_Comments</MudSelectItem>
                         </MudSelect>
                     </MudItem>
 
                     <MudItem xs="12" lg="6" xl="4" xxl="3">
                         <MudSelect @bind-Value="Model.SortDirection" For="() => Model.SortDirection" Label="@Label.FromDisplay(() => Model.SortDirection)" HelperText="@Description.FromDisplay(() => Model.SortDirection)">
-                            <MudSelectItem Value="@Octokit.SortDirection.Ascending">@Enum_Display.SortDirection_Ascending</MudSelectItem>
-                            <MudSelectItem Value="@Octokit.SortDirection.Descending">@Enum_Display.SortDirection_Descending</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.SortDirection.Ascending">@EnumDisplay.SortDirection_Ascending</MudSelectItem>
+                            <MudSelectItem Value="@Octokit.SortDirection.Descending">@EnumDisplay.SortDirection_Descending</MudSelectItem>
                         </MudSelect>
                     </MudItem>
 
@@ -106,7 +106,7 @@
         </MudStack>
     }
 
-    <MudStack Class="flex-initial" Row="true" Justify="Justify.SpaceBetween">
+    <MudStack Class="flex-initial" Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Baseline">
         <MudButton Variant="Variant.Text" Disabled="@(!CanGoToPreviousPage)" OnClick="GoToPreviousPage">@L["PreviousPage"]</MudButton>
         <MudText>@String.Format(CultureInfo.CurrentCulture, L["PageTemplate"], Page)</MudText>
         <MudButton Variant="Variant.Text" Disabled="@(!CanGoToNextPage)" OnClick="GoToNextPage">@L["NextPage"]</MudButton>

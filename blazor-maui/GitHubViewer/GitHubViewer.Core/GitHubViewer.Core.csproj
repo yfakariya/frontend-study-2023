@@ -14,10 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Localization\Enum.Display.Designer.cs">
+    <Compile Update="Localization\EnumDisplay.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Enum.Display.resx</DependentUpon>
+      <DependentUpon>EnumDisplay.resx</DependentUpon>
     </Compile>
     <Compile Update="Localization\Pages\Issues.Display.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -37,9 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Localization\Enum.Display.resx">
+    <EmbeddedResource Update="Localization\EnumDisplay.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Enum.Display.Designer.cs</LastGenOutput>
+      <LastGenOutput>EnumDisplay.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Localization\Pages\Issues.Display.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

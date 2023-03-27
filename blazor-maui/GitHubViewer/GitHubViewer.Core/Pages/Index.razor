@@ -7,8 +7,6 @@ Welcome to your new app.
 
 <MudText>You are @GetCurrentAuthenticationState()</MudText>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
-
 @code {
     [CascadingParameter]
     Task<AuthenticationState>? ExistingCascadedAuthenticationState{ get; set; }

@@ -118,27 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="IssueSort.Comments" xml:space="preserve">
-    <value>Commented date/time</value>
+    <value>コメント日時</value>
   </data>
   <data name="IssueSort.Created" xml:space="preserve">
-    <value>Created date/time</value>
+    <value>作成日時</value>
   </data>
   <data name="IssueSort.Updated" xml:space="preserve">
-    <value>Updated date/time</value>
+    <value>更新日時</value>
+  </data>
+  <data name="ItemState.Closed" xml:space="preserve">
+    <value>クローズ済み</value>
+  </data>
+  <data name="ItemState.Open" xml:space="preserve">
+    <value>オープン</value>
   </data>
   <data name="ItemStateFilter.All" xml:space="preserve">
-    <value>All</value>
+    <value>全て</value>
   </data>
   <data name="ItemStateFilter.Closed" xml:space="preserve">
-    <value>Closed</value>
+    <value>クローズ済み</value>
   </data>
   <data name="ItemStateFilter.Open" xml:space="preserve">
-    <value>Open</value>
+    <value>オープン</value>
   </data>
   <data name="SortDirection.Ascending" xml:space="preserve">
-    <value>Ascending</value>
+    <value>昇順</value>
   </data>
   <data name="SortDirection.Descending" xml:space="preserve">
-    <value>Descending</value>
+    <value>降順</value>
   </data>
 </root>

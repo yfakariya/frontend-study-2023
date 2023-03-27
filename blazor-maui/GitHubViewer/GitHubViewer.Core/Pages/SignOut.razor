@@ -8,7 +8,7 @@
 @inject IStringLocalizer<SignOut> L
 @inject NavigationManager Navigation
 
-<MudCard>
+<MudCard Class="mt-4">
     @if (!String.IsNullOrEmpty(Error))
     {
         <ErrorPanel Class="mb-4">
@@ -16,9 +16,12 @@
         </ErrorPanel>
     }
 
-    <MudCheckBox @bind-Checked="RemovesPersistentData" Label="@L["RemovesPersistentDataLabel"]" />
-    <MudButton OnClick="OnSubmit" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2 ml-auto">@L["SignOutButton"]</MudButton>
-
+    <MudCardContent>
+        <MudCheckBox @bind-Checked="RemovesPersistentData" Label="@L["RemovesPersistentDataLabel"]" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton OnClick="OnSubmit" Variant="Variant.Filled" Color="Color.Primary" Class="mx-4 mb-4">@L["SignOutButton"]</MudButton>
+    </MudCardActions>
 
     <MudOverlay @bind-Visible="IsLoading" DarkBackground="true">
         <MudStack>

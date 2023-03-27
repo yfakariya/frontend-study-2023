@@ -22,14 +22,14 @@ namespace GitHubViewer.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Enum_Display {
+    public class EnumDisplay {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Enum_Display() {
+        internal EnumDisplay() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace GitHubViewer.Localization {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GitHubViewer.Localization.Enum.Display", typeof(Enum_Display).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GitHubViewer.Localization.EnumDisplay", typeof(EnumDisplay).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -84,6 +84,24 @@ namespace GitHubViewer.Localization {
         public static string IssueSort_Updated {
             get {
                 return ResourceManager.GetString("IssueSort.Updated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed.
+        /// </summary>
+        public static string ItemState_Closed {
+            get {
+                return ResourceManager.GetString("ItemState.Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string ItemState_Open {
+            get {
+                return ResourceManager.GetString("ItemState.Open", resourceCulture);
             }
         }
         

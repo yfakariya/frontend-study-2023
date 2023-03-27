@@ -9,7 +9,7 @@
 @inject HttpClient HttpClient
 @inject ILogger<Issue> Logger
 @inject IStringLocalizer<Issue> L
-@inject IStringLocalizer<Enum_Display> EL
+@inject IStringLocalizer<EnumDisplay> EL
 @inject IIssueRepository IssueRepository
 @inject NavigationManager Navigation
 
@@ -27,59 +27,138 @@
     }
     else
     {
-        <MudGrid Class="pt-4">
-            <MudItem xs="12">
-                <MudStack Row="true" AlignItems="AlignItems.Center">
-                    <MudAvatar Class="cursor-pointer" @onclick="OnClickAvatar">
-                        <MudImage Src="@(CurrentIssue.User.AvatarUrl)" Alt="@AvatarAlt" />
-                    </MudAvatar>
-                    @if (!String.IsNullOrEmpty(CurrentIssue.User.HtmlUrl))
-                    {
-                        <MudLink OnClick="OpenInBrowserAsync">@CurrentIssue.User.Login</MudLink>
-                    }
-                    else
-                    {
-                        <MudText>@CurrentIssue.User.Login</MudText>
-                    }
-                </MudStack>
-            </MudItem>
+        <MudHidden Breakpoint="Breakpoint.LgAndUp" Invert="true">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
 
-            <MudItem xs="3" sm="2" lg="1" xl="1">
-                @* TODO: Color *@
-                <MudText>@EL[$"Issue_{CurrentIssue.State.Value}"]</MudText>
-            </MudItem>
-
-            <MudItem xs="9" sm="10" lg="3" xl="2">
+                <MudChip Class="rounded-lg" Style="@($"background: {CurrentIssueStateColor}")">
+                    <MudText Typo="Typo.button">
+                        @EL[$"ItemState.{CurrentIssue.State.Value}"]
+                    </MudText>
+                </MudChip>
                 <MudText>@Owner/@Repository</MudText>
-            </MudItem>
 
-            @* spacer *@
-            <MudHidden Breakpoint="Breakpoint.Lg" Invert="true">
-                <MudItem lg="2" xl="5" xxl="6" />
-                <MudItem lg="6" xl="4" xxl="3" Style="text-align: end">
-                    @if (CurrentIssue.UpdatedAt == null)
-                    {
-                        <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
-                    }
-                    else
-                    {
-                        <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
-                    }
+                <MudAvatar Class="cursor-pointer" @onclick="OnClickAvatar">
+                    <MudImage Src="@(CurrentIssue.User.AvatarUrl)" Alt="@AvatarAlt" />
+                </MudAvatar>
+                @if (!String.IsNullOrEmpty(CurrentIssue.User.HtmlUrl))
+                {
+                    <MudLink OnClick="OpenInBrowserAsync">@CurrentIssue.User.Login</MudLink>
+                }
+                else
+                {
+                    <MudText>@CurrentIssue.User.Login</MudText>
+                }
+
+                @if (!String.IsNullOrEmpty(CurrentIssue.User.Name))
+                {
+                    <MudText>@CurrentIssue.User.Name</MudText>
+                }
+
+                <MudSpacer />
+                @if (CurrentIssue.UpdatedAt == null)
+                {
+                    <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
+                }
+                else
+                {
+                    <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
+                }
+
+            </MudStack>
+        </MudHidden>
+
+        <MudHidden Breakpoint="Breakpoint.Md" Invert="true">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+
+                <MudChip Class="rounded-lg" Style="@($"background: {CurrentIssueStateColor}")">
+                    <MudText Typo="Typo.button">
+                        @EL[$"ItemState.{CurrentIssue.State.Value}"]
+                    </MudText>
+                </MudChip>
+                <MudText>@Owner/@Repository</MudText>
+
+                <MudAvatar Class="cursor-pointer" @onclick="OnClickAvatar">
+                    <MudImage Src="@(CurrentIssue.User.AvatarUrl)" Alt="@AvatarAlt" />
+                </MudAvatar>
+                @if (!String.IsNullOrEmpty(CurrentIssue.User.HtmlUrl))
+                {
+                    <MudLink OnClick="OpenInBrowserAsync">@CurrentIssue.User.Login</MudLink>
+                }
+                else
+                {
+                    <MudText>@CurrentIssue.User.Login</MudText>
+                }
+
+                @if (!String.IsNullOrEmpty(CurrentIssue.User.Name))
+                {
+                    <MudText>@CurrentIssue.User.Name</MudText>
+                }
+
+            </MudStack>
+
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                @if (CurrentIssue.UpdatedAt == null)
+                {
+                    <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
+                }
+                else
+                {
+                    <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
+                }
+            </MudStack>
+        </MudHidden>
+
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudGrid>
+
+                <MudItem xs="12" md="6">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudChip Class="rounded-lg" Style="@($"background: {CurrentIssueStateColor}")">
+                            <MudText Typo="Typo.button">
+                                @EL[$"ItemState.{CurrentIssue.State.Value}"]
+                            </MudText>
+                        </MudChip>
+                        <MudText>@Owner/@Repository</MudText>
+                    </MudStack>
                 </MudItem>
-            </MudHidden>
-            <MudHidden Breakpoint="Breakpoint.Lg">
-                <MudItem xs="12">
-                    @if (CurrentIssue.UpdatedAt == null)
-                    {
-                        <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
-                    }
-                    else
-                    {
-                        <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
-                    }
+
+                <MudItem xs="12" md="6">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudAvatar Class="cursor-pointer" @onclick="OnClickAvatar">
+                            <MudImage Src="@(CurrentIssue.User.AvatarUrl)" Alt="@AvatarAlt" />
+                        </MudAvatar>
+                        @if (!String.IsNullOrEmpty(CurrentIssue.User.HtmlUrl))
+                        {
+                            <MudLink OnClick="OpenInBrowserAsync">@CurrentIssue.User.Login</MudLink>
+                        }
+                        else
+                        {
+                            <MudText>@CurrentIssue.User.Login</MudText>
+                        }
+
+                        @if (!String.IsNullOrEmpty(CurrentIssue.User.Name))
+                        {
+                            <MudText>@CurrentIssue.User.Name</MudText>
+                        }
+                    </MudStack>
                 </MudItem>
-            </MudHidden>
-        </MudGrid>
+
+                <MudItem xs="12" Style="text-align: end">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        @if (CurrentIssue.UpdatedAt == null)
+                        {
+                            <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
+                        }
+                        else
+                        {
+                            <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
+                        }
+                    </MudStack>
+                </MudItem>
+
+            </MudGrid>
+        </MudHidden>
+
         @if (IssueHtml == null)
         {
             <MudProgressCircular Class="align-self-center flex-glow-1" Color="Color.Secondary" Indeterminate="true" />
@@ -122,7 +201,10 @@
 
     MarkupString? IssueHtml { get; set; }
 
-    string? AvatarAlt => String.Format(CultureInfo.CurrentCulture, L["AvatarAltTemplate"], CurrentIssue?.User.AvatarUrl);
+    string? AvatarAlt => String.Format(CultureInfo.CurrentCulture, L["AvatarAltTemplate"], CurrentIssue?.User.Login);
+
+    string CurrentIssueStateColor =>
+        CurrentIssue?.State == Octokit.ItemState.Open ? Colors.Green.Default : Colors.Purple.Default;
 
     DialogOptions AvatarPopupOptions { get; } =
         new DialogOptions
@@ -138,8 +220,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        ParentNavigationRouteProvider.SetParentRoute(Routes.Issues);
-
         if (IsLoading)
         {
             return;
@@ -147,11 +227,21 @@
 
         if (CurrentIssue != null)
         {
-            // Support hot-reload
-            AppBarTitleAccessor.SetTitle(Navigation.Uri, String.Format(CultureInfo.CurrentCulture, L["TitleTemplate"], CurrentIssue.Number, CurrentIssue.Title));
+            // For parent page transition, this OnParametersSetAsync could be called,
+            // so we must avoid title/parent route overwrite for such situation.
+
+            var path = $"/{Navigation.ToBaseRelativePath(Navigation.Uri)}";
+            if (path.StartsWith(Routes.Issues) && !path.EndsWith(Routes.Issues))
+            {
+                // Support hot-reload
+                ParentNavigationRouteProvider.SetParentRoute(Routes.Issues);
+                AppBarTitleAccessor.SetTitle(Navigation.Uri, String.Format(CultureInfo.CurrentCulture, L["TitleTemplate"], CurrentIssue.Number, CurrentIssue.Title));
+            }
+
             return;
         }
 
+        ParentNavigationRouteProvider.SetParentRoute(Routes.Issues);
         AppBarTitleAccessor.SetTitle(Navigation.Uri, String.Format(CultureInfo.CurrentCulture, L["FallbackTitleTemplate"], IssueNumber));
         try
         {

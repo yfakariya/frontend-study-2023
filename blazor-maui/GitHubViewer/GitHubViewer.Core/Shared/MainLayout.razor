@@ -30,7 +30,10 @@
             <NavMenu />
         </MudDrawer>
         <MudMainContent>
-            <MudContainer MaxWidth="MaxWidth.False">
+            <MudHidden Breakpoint="Breakpoint.Sm" Invert="true">
+                <MudContainer MaxWidth="MaxWidth.False" Class="pt-2" />
+            </MudHidden>
+            <MudContainer MaxWidth="MaxWidth.False" Class="pt-4">
                 <CascadingValue TValue="IAppBarTitleAccessor" Value="AppBarTitleAccessor">
                     <CascadingValue TValue="IParentNavigationRouteProvider" Value="ParentNavigationRouteProvider">
                         @Body
