@@ -7,7 +7,7 @@ using Octokit;
 
 namespace GitHubViewer.Issues
 {
-	internal sealed class IssueRepository : IIssueRepository
+	public sealed class IssueRepository : IIssueRepository
 	{
 		private readonly OAuth2ApiConnectionFactory _connectionFactory;
 		public IssueRepository(OAuth2ApiConnectionFactory connectionFactory)
@@ -73,6 +73,28 @@ namespace GitHubViewer.Issues
 			}
 
 			return await task.ConfigureAwait(false);
+		}
+
+		public async Task<Issue> GetIssueAsync(
+			string owner,
+			string repository,
+			int number,
+			CancellationToken cancellationToken = default
+		)
+		{
+			var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
+			var client = new IssuesClient(connection);
+			return await client.Get(owner, repository, number).ConfigureAwait(false);
+		}
+
+		public async Task<string> RenderMarkdownAsync(
+			string markdown,
+			CancellationToken cancellationToken = default
+		)
+		{
+			var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
+			var client = new MarkdownClient(connection);
+			return await client.RenderRawMarkdown(markdown).ConfigureAwait(false);
 		}
 	}
 }

@@ -1,15 +1,190 @@
-@attribute [Route(Routes.Issues +"/{Owner}/{Repository}/{IssueNumber:int}" )]
+@using GitHubViewer.Infrastructure;
+@using GitHubViewer.Issues;
+@using System.Globalization;
+
+@attribute [Route(Routes.Issues + "/{Owner}/{Repository}/{IssueNumber:int}")]
 @attribute [Authorize]
 
-<h3>Issue</h3>
+@inject IBrowserLauncher BrowserLauncher
+@inject HttpClient HttpClient
+@inject ILogger<Issue> Logger
+@inject IStringLocalizer<Issue> L
+@inject IStringLocalizer<Enum_Display> EL
+@inject IIssueRepository IssueRepository
+@inject NavigationManager Navigation
+
+<MudStack>
+    @if (!String.IsNullOrEmpty(Error))
+    {
+        <ErrorPanel>
+            <MudText>@Error</MudText>
+        </ErrorPanel>
+    }
+
+    @if (CurrentIssue == null)
+    {
+        <MudProgressCircular Class="align-self-center flex-glow-1" Color="Color.Secondary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudGrid Class="pt-4">
+            <MudItem xs="12">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudAvatar Class="cursor-pointer" @onclick="OnClickAvatar">
+                        <MudImage Src="@(CurrentIssue.User.AvatarUrl)" Alt="@AvatarAlt" />
+                    </MudAvatar>
+                    @if (!String.IsNullOrEmpty(CurrentIssue.User.HtmlUrl))
+                    {
+                        <MudLink OnClick="OpenInBrowserAsync">@CurrentIssue.User.Login</MudLink>
+                    }
+                    else
+                    {
+                        <MudText>@CurrentIssue.User.Login</MudText>
+                    }
+                </MudStack>
+            </MudItem>
+
+            <MudItem xs="3" sm="2" lg="1" xl="1">
+                @* TODO: Color *@
+                <MudText>@EL[$"Issue_{CurrentIssue.State.Value}"]</MudText>
+            </MudItem>
+
+            <MudItem xs="9" sm="10" lg="3" xl="2">
+                <MudText>@Owner/@Repository</MudText>
+            </MudItem>
+
+            @* spacer *@
+            <MudHidden Breakpoint="Breakpoint.Lg" Invert="true">
+                <MudItem lg="2" xl="5" xxl="6" />
+                <MudItem lg="6" xl="4" xxl="3" Style="text-align: end">
+                    @if (CurrentIssue.UpdatedAt == null)
+                    {
+                        <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
+                    }
+                    else
+                    {
+                        <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
+                    }
+                </MudItem>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.Lg">
+                <MudItem xs="12">
+                    @if (CurrentIssue.UpdatedAt == null)
+                    {
+                        <MudText>@CurrentIssue.CreatedAt.ToString("F", CultureInfo.CurrentCulture)</MudText>
+                    }
+                    else
+                    {
+                        <MudText>@String.Format(CultureInfo.CurrentCulture, L["CreatedAtWithUpdatedAtTempalte"], CurrentIssue.CreatedAt, CurrentIssue.UpdatedAt)</MudText>
+                    }
+                </MudItem>
+            </MudHidden>
+        </MudGrid>
+        @if (IssueHtml == null)
+        {
+            <MudProgressCircular Class="align-self-center flex-glow-1" Color="Color.Secondary" Indeterminate="true" />
+        }
+        else
+        {
+            <MudPaper Class="pa-4">@IssueHtml</MudPaper>
+        }
+
+        <MudDialog Options="@AvatarPopupOptions" @bind-IsVisible:get="IsAvatarPopupShown" @bind-IsVisible:set="SetIsAvatarPopupShown">
+            <TitleContent />
+            <DialogContent>
+                <MudImage Src="@(CurrentIssue.User.AvatarUrl)" Alt="@AvatarAlt" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Width="null" />
+            </DialogContent>
+        </MudDialog>
+    }
+</MudStack>
 
 @code {
     [Parameter]
-    public string Owner { get; set; } = null!;
+    public string Owner { get; set; } = default!;
 
     [Parameter]
-    public string Repository { get; set; } = null!;
+    public string Repository { get; set; } = default!;
 
     [Parameter]
     public int IssueNumber { get; set; }
+
+    [CascadingParameter]
+    public IAppBarTitleAccessor AppBarTitleAccessor { get; set; } = default!;
+
+    [CascadingParameter]
+    public IParentNavigationRouteProvider ParentNavigationRouteProvider { get; set; } = default!;
+
+    string? Error { get; set; }
+
+    bool IsLoading { get; set; }
+
+    Octokit.Issue? CurrentIssue { get; set; }
+
+    MarkupString? IssueHtml { get; set; }
+
+    string? AvatarAlt => String.Format(CultureInfo.CurrentCulture, L["AvatarAltTemplate"], CurrentIssue?.User.AvatarUrl);
+
+    DialogOptions AvatarPopupOptions { get; } =
+        new DialogOptions
+            {
+                CloseButton = true,
+                CloseOnEscapeKey = true,
+                DisableBackdropClick = false,
+                NoHeader = true,
+                MaxWidth = MaxWidth.False,
+            };
+
+    bool IsAvatarPopupShown { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ParentNavigationRouteProvider.SetParentRoute(Routes.Issues);
+
+        if (IsLoading)
+        {
+            return;
+        }
+
+        if (CurrentIssue != null)
+        {
+            // Support hot-reload
+            AppBarTitleAccessor.SetTitle(Navigation.Uri, String.Format(CultureInfo.CurrentCulture, L["TitleTemplate"], CurrentIssue.Number, CurrentIssue.Title));
+            return;
+        }
+
+        AppBarTitleAccessor.SetTitle(Navigation.Uri, String.Format(CultureInfo.CurrentCulture, L["FallbackTitleTemplate"], IssueNumber));
+        try
+        {
+            IsLoading = true;
+            CurrentIssue = await IssueRepository.GetIssueAsync(Owner, Repository, IssueNumber);
+            AppBarTitleAccessor.SetTitle(Navigation.Uri, String.Format(CultureInfo.CurrentCulture, L["TitleTemplate"], CurrentIssue.Number, CurrentIssue.Title));
+
+            IssueHtml = new MarkupString(await IssueRepository.RenderMarkdownAsync(CurrentIssue.Body));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, $"Failed to get issue #{IssueNumber} from {Owner}/{Repository}");
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    void OnClickAvatar() => SetIsAvatarPopupShown(true);
+
+    void SetIsAvatarPopupShown(bool value)
+    {
+        IsAvatarPopupShown = value;
+    }
+
+    async Task OpenInBrowserAsync()
+    {
+        var url = CurrentIssue?.User.HtmlUrl;
+        if (!String.IsNullOrEmpty(url))
+        {
+            await BrowserLauncher.OpenAsync(url);
+        }
+    }
 }

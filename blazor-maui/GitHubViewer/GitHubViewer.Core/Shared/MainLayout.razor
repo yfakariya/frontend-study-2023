@@ -3,6 +3,7 @@
 
 @inherits LayoutComponentBase
 
+@inject ILogger<MainLayout> Logger
 @inject IStringLocalizer<MainLayout> L
 @inject IStringLocalizer<NavMenu> RoutesLocalization
 @inject IWindowTitleAccessor WindowTitleAccessor
@@ -15,50 +16,68 @@
 
     <MudLayout>
         <MudAppBar>
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
+            @if (String.IsNullOrEmpty(ParentNavigationRouteProvider.ParentRoute))
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => BackToParent())" />
+            }
             <MudText Typo="Typo.h5" Class="ml-3">@Title</MudText>
         </MudAppBar>
         <MudDrawer @bind-Open="@IsDrawerOpen" ClipMode="DrawerClipMode.Always">
             <NavMenu />
         </MudDrawer>
         <MudMainContent>
-            <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
-                @Body
+            <MudContainer MaxWidth="MaxWidth.False">
+                <CascadingValue TValue="IAppBarTitleAccessor" Value="AppBarTitleAccessor">
+                    <CascadingValue TValue="IParentNavigationRouteProvider" Value="ParentNavigationRouteProvider">
+                        @Body
+                    </CascadingValue>
+                </CascadingValue>
             </MudContainer>
         </MudMainContent>
     </MudLayout>
 </MudRTLProvider>
 
 @code {
-    static readonly Dictionary<string, Func<IReadOnlyDictionary<string, object>, string>> CustomTitleFactories =
-        // Set custom page title handler here.
-        new(StringComparer.OrdinalIgnoreCase)
-        {
-        };
-
     MudThemeProvider ThemeProvider { get; set; } = null!;
 
     bool IsDarkMode { get; set; }
 
     bool IsDrawerOpen { get; set; } = false;
 
+    RouteData? RouteData => (Body?.Target as AuthorizeRouteView)?.RouteData;
+
+    ParentNavigationRouteProvider ParentNavigationRouteProvider { get; set; } = default!;
+
+    AppBarTitleAccessor AppBarTitleAccessor { get; set; } = default!;
+
     string Title { get; set; } = default!;
+
+    string AppTitle => $"{Title} - {L["Title"]}";
+
+    protected override void OnInitialized()
+    {
+        ParentNavigationRouteProvider = new();
+        AppBarTitleAccessor = new(
+            title =>
+            {
+                if (title != Title)
+                {
+                    Title = title;
+                    StateHasChanged();
+                }
+            }
+        );
+    }
 
     protected override void OnParametersSet()
     {
-        var route = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
-        var routeData = (Body?.Target as AuthorizeRouteView)?.RouteData;
-
-        var title =
-            (routeData != null && CustomTitleFactories.TryGetValue(route, out var customTitleFactory))
-            ? customTitleFactory(routeData.RouteValues)
-            : null;
-
-        var pageTitle = title ?? RoutesLocalization[route.ToLowerInvariant()];
-        var appTitle = $"{pageTitle} - {L["Title"]}";
-
-        Title = WindowTitleAccessor.HasWindow ? pageTitle : appTitle;
-        WindowTitleAccessor.Title = appTitle;
+        ParentNavigationRouteProvider.Reset();
+        AppBarTitleAccessor.Reset(Navigation.Uri);
+        Title = RoutesLocalization[Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -76,10 +95,25 @@
                 });
             StateHasChanged();
         }
+
+        // Prevent infinite-loop
+        if (WindowTitleAccessor.Title != AppTitle)
+        {
+            WindowTitleAccessor.Title = AppTitle;
+            StateHasChanged();
+        }
     }
 
-    private void ToggleDrawer()
+    void ToggleDrawer()
     {
         IsDrawerOpen = !IsDrawerOpen;
+    }
+
+    void BackToParent()
+    {
+        if (ParentNavigationRouteProvider.ParentRoute != null)
+        {
+            Navigation.NavigateTo(ParentNavigationRouteProvider.ParentRoute);
+        }
     }
 }
