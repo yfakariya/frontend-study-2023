@@ -22,7 +22,8 @@ public static class ApplicationSetUp
 		Registration<IWindowTitleAccessor> windowTitleAccessorRegistration,
 		Registration<CredentialsRepository> credentialsRepositoryRegistration,
 		Registration<IGitHubAuthenticator> gitHubAuthenticatorRegistration,
-		Registration<AuthenticationStateProvider> authenticationStateProviderRegistration
+		Registration<AuthenticationStateProvider> authenticationStateProviderRegistration,
+		GenericRegistration<ISessionStorage<ValueTuple>> sessionStorageRegistration
 	)
 	{
 		services.AddLocalization();
@@ -57,6 +58,7 @@ public static class ApplicationSetUp
 		credentialsRepositoryRegistration.Register(services);
 		gitHubAuthenticatorRegistration.Register(services);
 		authenticationStateProviderRegistration.Register(services);
+		sessionStorageRegistration.Register(services);
 
 		services.AddMudServices();
 	}

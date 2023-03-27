@@ -30,7 +30,8 @@ public static class MauiProgram
 			Registration<IWindowTitleAccessor>.Singleton<MauiWindowTitleAccessor>(),
 			Registration<CredentialsRepository>.Singleton<MauiSecureStorageCredentialsRepository>(),
 			Registration<IGitHubAuthenticator>.Singleton<MauiGitHubAuthenticator>(),
-			Registration<AuthenticationStateProvider>.Singleton<GitHubAuthenticationStateProvider>()
+			Registration<AuthenticationStateProvider>.Singleton<GitHubAuthenticationStateProvider>(),
+			GenericRegistration<ISessionStorage<ValueTuple>>.Singleton<InMemorySessionStorage<ValueTuple>>()
 		);
 
 #if WINDOWS

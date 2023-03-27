@@ -1,10 +1,12 @@
 @using System.ComponentModel.DataAnnotations;
+@using GitHubViewer.Infrastructure;
 @using GitHubViewer.Issues;
 @using System.Globalization;
 @attribute [Route(Routes.Issues)]
 @attribute [Authorize]
 
 @inject ILogger<Issues> Logger
+@inject ISessionStorage<Issues> SessionStorage
 @inject IStringLocalizer<Issues> L
 @inject IIssueRepository IssueRepository
 @inject NavigationManager Navigation
@@ -115,7 +117,9 @@
 @code {
     string? Error { get; set; }
 
-    ViewModel Model { get; set; } = new ViewModel();
+    ViewModel Model { get; set; } = new();
+
+    IssueSearchCondition? LastCondition { get; set; } = new();
 
     EditContext EditContext { get; set; } = default!;
 
@@ -137,8 +141,37 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // TODO: restore condition
+        var (conditionFound, condition) = await SessionStorage.GetAsync<IssueSearchCondition>(StorageKeys.Condition);
+        if (conditionFound)
+        {
+            Model =
+                new ViewModel
+                    {
+                        IssuesPerPage = condition.IssuesPerPage,
+                        Labels = condition.Labels,
+                        Repository = condition.Repository ?? String.Empty,
+                        Since = condition.Since?.LocalDateTime,
+                        SortDirection = condition.SortDirection,
+                        SortProperty = condition.SortProperty,
+                        State = condition.State,
+                    };
 
+            var (pageFound, page) = await SessionStorage.GetAsync<int>(StorageKeys.Page);
+            if (pageFound)
+            {
+                Page = page;
+
+                var (resultFound, result) = await SessionStorage.GetAsync<IList<Octokit.Issue>>(StorageKeys.Result);
+                if (resultFound)
+                {
+                    SearchedIssues = result;
+                    StateHasChanged();
+                    return;
+                }
+            }
+        }
+
+        // initial search
         await SearchIssues(Page);
     }
 
@@ -167,10 +200,22 @@
         await SearchIssues(Page + 1);
     }
 
-    Task OnValidSubmit() => SearchIssues(Page);
+    async Task OnValidSubmit()
+    {
+        // Invalidate caches
+        await SessionStorage.DeleteAsync(StorageKeys.Result);
+        await SessionStorage.DeleteAsync(StorageKeys.Page);
+        await SessionStorage.DeleteAsync(StorageKeys.Condition);
+        await SearchIssues(Page);
+    }
 
     async Task SearchIssues(int page)
     {
+        if (IsLoading)
+        {
+            return;
+        }
+
         IsInvalid = false;
         try
         {
@@ -178,26 +223,36 @@
 
             var repositoryTokens = Model.Repository.Trim().Split('/');
 
-            SearchedIssues =
-                 (await IssueRepository.GetIssuesAsync(
-                     new IssueSearchCondition
-                         {
-                             IssuesPerPage = Model.IssuesPerPage,
-                             Owner = repositoryTokens.Length == 2 ? repositoryTokens[0] : null,
-                             Repository = repositoryTokens.Length == 2 ? repositoryTokens[1] : null,
-                             Since = Model.Since,
-                             SortDirection = Model.SortDirection,
-                             SortProperty = Model.SortProperty,
-                             State = Model.State
-                         },
-                     Page
-                 ).ConfigureAwait(false)).ToArray();
+            var (conditionFound, condition) = await SessionStorage.GetAsync<IssueSearchCondition>(StorageKeys.Condition);
+
+            if (!conditionFound)
+            {
+                condition =
+                    new IssueSearchCondition
+                        {
+                            IssuesPerPage = Model.IssuesPerPage,
+                            Owner = repositoryTokens.Length == 2 ? repositoryTokens[0] : null,
+                            Repository = repositoryTokens.Length == 2 ? repositoryTokens[1] : null,
+                            Since = Model.Since,
+                            SortDirection = Model.SortDirection,
+                            SortProperty = Model.SortProperty,
+                            State = Model.State
+                        };
+
+                await SessionStorage.SetAsync(StorageKeys.Condition, condition);
+            }
+
+            await SessionStorage.SetAsync(StorageKeys.Page, Page);
+
+            SearchedIssues = (await IssueRepository.GetIssuesAsync(condition, Page).ConfigureAwait(false)).ToArray();
             Page = page;
+
+            await SessionStorage.SetAsync(StorageKeys.Result, SearchedIssues);
         }
         catch (Exception ex)
         {
             Error = ex.Message;
-            Logger.LogError(ex, "Failed to sign-in.");
+            Logger.LogError(ex, "Failed to get issues.");
         }
         finally
         {
@@ -265,5 +320,12 @@
         public DateTime? Since { get; set; }
 
         public IReadOnlyList<string> Labels { get; set; } = Array.Empty<string>();
+    }
+
+    static class StorageKeys
+    {
+        public const string Condition = "Condition";
+        public const string Page = "Page";
+        public const string Result = "Result";
     }
 }
