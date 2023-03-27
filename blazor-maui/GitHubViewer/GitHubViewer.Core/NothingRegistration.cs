@@ -6,12 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GitHubViewer;
 
-internal sealed class NothingRegistration<TService, TImplementation> : Registration<TService>
+internal sealed class NothingRegistration<TService> : GenericRegistration<TService>
 	where TService : class
-	where TImplementation : class, TService
 {
-	public static NothingRegistration<TService, TImplementation> Instance { get; }
-		= new NothingRegistration<TService, TImplementation>();
+	public static NothingRegistration<TService> Instance { get; }
+		= new NothingRegistration<TService>();
 
 	private NothingRegistration() { }
 

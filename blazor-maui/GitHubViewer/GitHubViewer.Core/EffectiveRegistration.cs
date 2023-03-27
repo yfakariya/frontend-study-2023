@@ -2,11 +2,12 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GitHubViewer;
 
-internal sealed class EffectiveRegistration<TService, TImplementation> : Registration<TService>
+internal sealed class EffectiveRegistration<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation> : Registration<TService>
 	where TService : class
 	where TImplementation : class, TService
 {
