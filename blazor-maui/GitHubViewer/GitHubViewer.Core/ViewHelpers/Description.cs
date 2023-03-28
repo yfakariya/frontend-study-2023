@@ -6,11 +6,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace GitHubViewer.ViewHelpers
+namespace GitHubViewer.ViewHelpers;
+
+public static class Description
 {
-	public static class Description
-	{
-		public static string FromDisplay<T>(Expression<Func<T>> expression)
-			=> (expression.Body as MemberExpression)?.Member.GetCustomAttribute<DisplayAttribute>(inherit: true)?.GetDescription() ?? String.Empty;
-	}
+	public static string FromDisplay<T>(Expression<Func<T>> expression)
+		=> (expression.Body as MemberExpression)?.Member.GetCustomAttribute<DisplayAttribute>(inherit: true)?.GetDescription() ?? String.Empty;
 }

@@ -2,12 +2,11 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-namespace GitHubViewer.Infrastructure
-{
-	public interface IWindowTitleAccessor
-	{
-		bool HasWindow { get; }
+namespace GitHubViewer.Infrastructure;
 
-		string Title { get; set; }
-	}
+public interface IWindowTitleAccessor
+{
+	bool HasWindow { get; }
+
+	string Title { get; set; }
 }

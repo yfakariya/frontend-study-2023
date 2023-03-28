@@ -4,24 +4,23 @@
 
 using Octokit;
 
-namespace GitHubViewer.Issues
+namespace GitHubViewer.Issues;
+
+public sealed class IssueSearchCondition
 {
-	public sealed class IssueSearchCondition
-	{
-		public string? Owner { get; set; }
+	public string? Owner { get; set; }
 
-		public string? Repository { get; set; }
+	public string? Repository { get; set; }
 
-		public int? IssuesPerPage { get; set; }
+	public int? IssuesPerPage { get; set; }
 
-		public ItemStateFilter State { get; set; }
+	public ItemStateFilter State { get; set; }
 
-		public SortDirection SortDirection { get; set; }
+	public SortDirection SortDirection { get; set; }
 
-		public IssueSort SortProperty { get; set; }
+	public IssueSort SortProperty { get; set; }
 
-		public DateTimeOffset? Since { get; set; }
+	public DateTimeOffset? Since { get; set; }
 
-		public IReadOnlyList<string> Labels { get; set; } = Array.Empty<string>();
-	}
+	public IReadOnlyList<string> Labels { get; set; } = Array.Empty<string>();
 }
