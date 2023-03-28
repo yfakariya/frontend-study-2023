@@ -108,10 +108,10 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 							LoadProfile = false,
 							Policy =
 							{
-							Discovery =
-							{
-								RequireKeySet = false,
-							},
+								Discovery =
+								{
+									RequireKeySet = false,
+								},
 							},
 						}
 					);
