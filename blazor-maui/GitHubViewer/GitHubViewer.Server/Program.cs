@@ -41,6 +41,8 @@ builder.Services.AddAuthentication(
 	}
 );
 
+builder.Services.AddLocalization();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -72,6 +74,20 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+var supportedCultures =
+	new[]
+	{
+		"en-US",
+		"ja-JP"
+	};
+
+app.UseRequestLocalization(
+	new RequestLocalizationOptions()
+	.SetDefaultCulture(supportedCultures.First())
+	.AddSupportedCultures(supportedCultures)
+	.AddSupportedUICultures(supportedCultures)
+);
 
 app.UseRouting();
 
