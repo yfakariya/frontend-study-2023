@@ -1,8 +1,10 @@
+@using GitHubViewer.Authentication;
 @inject NavigationManager Navigation
+@inject IOptions<AuthenticationOptions> Options
 
 @code {
     protected override void OnInitialized()
     {
-        Navigation.NavigateTo(Routes.SignIn, forceLoad: false);
+        Navigation.NavigateTo(Options.Value.SignInRoute, forceLoad: false);
     }
 }

@@ -3,7 +3,7 @@
 @using GitHubViewer.Authentication;
 @using GitHubViewer.Infrastructure;
 
-@attribute [Route(Routes.SignIn)]
+@attribute [Route(AuthenticationOptions.DefaultSignInRoute)]
 
 @inject IBrowserLauncher BrowserLauncher
 @inject ICredentialsProvider CredentialsProvider

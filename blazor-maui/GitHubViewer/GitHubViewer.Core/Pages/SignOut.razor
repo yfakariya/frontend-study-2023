@@ -1,10 +1,11 @@
 @using GitHubViewer.Authentication;
 
-@attribute [Route(Routes.SignOut)]
+@attribute [Route(AuthenticationOptions.DefaultSignOuteRoute)]
 @attribute [Authorize]
 
 @inject IGitHubAuthenticator Authenticator
 @inject ILogger<SignOut> Logger
+@inject IOptions<AuthenticationOptions> Options
 @inject IStringLocalizer<SignOut> L
 @inject NavigationManager Navigation
 
@@ -44,7 +45,7 @@
         try
         {
             await Authenticator.SignOutAsync(RemovesPersistentData);
-            Navigation.NavigateTo(Routes.SignIn, forceLoad: false, replace: true);
+            Navigation.NavigateTo(Options.Value.SignInRoute, forceLoad: false, replace: true);
         }
         catch (Exception ex)
         {

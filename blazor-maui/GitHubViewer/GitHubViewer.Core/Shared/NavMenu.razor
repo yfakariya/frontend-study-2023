@@ -1,15 +1,17 @@
+@using GitHubViewer.Authentication;
+@inject IOptions<AuthenticationOptions> AuthenticationOptions
 @inject IStringLocalizer<NavMenu> L
 
 <MudNavMenu>
     <MudNavLink Href="@Routes.Home" Match="NavLinkMatch.All">@L[Routes.Home]</MudNavLink>
     @if (IsAnonymous)
     {
-        <MudNavLink Href="@Routes.SignIn" Match="NavLinkMatch.Prefix">@L[Routes.SignIn]</MudNavLink>
+        <MudNavLink Href="@AuthenticationOptions.Value.SignInRoute" Match="NavLinkMatch.Prefix">@L[GitHubViewer.Authentication.AuthenticationOptions.DefaultSignInRoute]</MudNavLink>
     }
     else
     {
         <MudNavLink Href="@Routes.Issues" Match="NavLinkMatch.Prefix">@L[Routes.Issues]</MudNavLink>
-        <MudNavLink Href="@Routes.SignOut" Match="NavLinkMatch.Prefix">@L[Routes.SignOut]</MudNavLink>
+        <MudNavLink Href="@AuthenticationOptions.Value.SignOutRoute" Match="NavLinkMatch.Prefix">@L[GitHubViewer.Authentication.AuthenticationOptions.DefaultSignOuteRoute]</MudNavLink>
     }
 </MudNavMenu>
 

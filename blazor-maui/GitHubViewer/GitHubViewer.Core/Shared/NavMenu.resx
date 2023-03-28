@@ -120,13 +120,13 @@
   <data name="/" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="/issues" xml:space="preserve">
+  <data name="/Issues" xml:space="preserve">
     <value>Issues</value>
   </data>
-  <data name="/sign-in" xml:space="preserve">
+  <data name="/SignIn" xml:space="preserve">
     <value>Sign in</value>
   </data>
-  <data name="/sign-out" xml:space="preserve">
+  <data name="/SignOut" xml:space="preserve">
     <value>Sign out</value>
   </data>
 </root>

@@ -120,13 +120,13 @@
   <data name="/" xml:space="preserve">
     <value>ホーム</value>
   </data>
-  <data name="/issues" xml:space="preserve">
+  <data name="/Issues" xml:space="preserve">
     <value>課題一覧</value>
   </data>
-  <data name="/sign-in" xml:space="preserve">
+  <data name="/SignIn" xml:space="preserve">
     <value>サインイン</value>
   </data>
-  <data name="/sign-out" xml:space="preserve">
+  <data name="/SignOut" xml:space="preserve">
     <value>サインアウト</value>
   </data>
 </root>

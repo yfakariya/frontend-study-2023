@@ -33,6 +33,7 @@ public static class ApplicationSetUp
 			}
 		);
 		services.AddOptions();
+		services.AddOptions<AuthenticationOptions>();
 		services.AddOptions<GitHubOptions>();
 		services.AddAuthorizationCore();
 		services.AddHttpClient();
