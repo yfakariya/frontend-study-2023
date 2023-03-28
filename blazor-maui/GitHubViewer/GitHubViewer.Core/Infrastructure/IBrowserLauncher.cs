@@ -2,10 +2,11 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-namespace GitHubViewer.Infrastructure
+namespace GitHubViewer.Infrastructure;
+
+public interface IBrowserLauncher
 {
-	public interface IBrowserLauncher
-	{
-		ValueTask OpenAsync(string uri, CancellationToken cancellationToken = default);
-	}
+	bool IsExternal { get; }
+
+	ValueTask OpenAsync(string uri, CancellationToken cancellationToken = default);
 }

@@ -39,9 +39,9 @@
                 @* TODO: L10N *@
                 <MudText>
                     @L["ClientIdAndSecretDescriptionPrefix"]
-                    <MudLink OnClick="@ClickGitHubLink">
+                    <BrowserLink Href="@GitHubLink" OnOpenBrowserLink="@ClickGitHubLink">
                         @GitHubLink
-                    </MudLink>
+                    </BrowserLink>
                     @L["ClientIdAndSecretDescriptionSuffix"]
                 </MudText>
             </InfoPanel>
@@ -86,11 +86,11 @@
         }
     }
 
-    public async Task ClickGitHubLink()
+    public async Task ClickGitHubLink(BrowserLinkEventArgs e)
     {
         try
         {
-            await BrowserLauncher.OpenAsync(GitHubLink);
+            await e.OpenBrowser;
         }
         catch (Exception ex)
         {

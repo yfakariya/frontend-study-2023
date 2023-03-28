@@ -1,0 +1,66 @@
+@using GitHubViewer.Infrastructure;
+@using System.Diagnostics;
+@inject IBrowserLauncher BrowserLauncher
+
+@if (BrowserLauncher.IsExternal)
+{
+    <MudLink OnClick="HandleOnClick" Class="Class" Style="Style" Tag="Tag" UserAttributes="UserAttributes" Color="Color" Disabled="Disabled" Typo="Typo" Underline="Underline">@ChildContent</MudLink>
+}
+else
+{
+    <MudLink Href="Href" Target="@("_target")" Class="Class" Style="Style" Tag="Tag" UserAttributes="UserAttributes" Color="Color" Disabled="Disabled" Typo="Typo" Underline="Underline">@ChildContent</MudLink>
+}
+
+@code {
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public EventCallback<BrowserLinkEventArgs> OnOpenBrowserLink { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Style { get; set; }
+
+    [Parameter]
+    public object? Tag { get; set; }
+
+    [Parameter]
+    public Dictionary<string, object> UserAttributes { get; set; } = new Dictionary<string, object>();
+
+    [Parameter]
+    public Color Color { get; set; } = Color.Primary;
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public Typo Typo { get; set; } = Typo.body1;
+
+    [Parameter]
+    public Underline Underline { get; set; } = Underline.Hover;
+
+    async Task HandleOnClick()
+    {
+        var href = Href;
+        if (String.IsNullOrWhiteSpace(href))
+        {
+            return;
+        }
+
+        var onOpenBrowserLink = OnOpenBrowserLink;
+        var task = BrowserLauncher.OpenAsync(href);
+
+        await onOpenBrowserLink.InvokeAsync(new BrowserLinkEventArgs(task));
+
+        if (!task.IsCompleted)
+        {
+            await task;
+        }
+    }
+}
