@@ -23,4 +23,7 @@
     <ProjectReference Include="..\GitHubViewer.Core\GitHubViewer.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\wwwroot\**\*.*" LinkBase="wwwroot" />
+  </ItemGroup>
 </Project>
