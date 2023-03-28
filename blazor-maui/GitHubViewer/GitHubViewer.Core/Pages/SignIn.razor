@@ -5,8 +5,8 @@
 
 @attribute [Route(Routes.SignIn)]
 
-@inject CredentialsRepository CredentialsRepository
 @inject IBrowserLauncher BrowserLauncher
+@inject ICredentialsProvider CredentialsProvider
 @inject IGitHubAuthenticator Authenticator
 @inject ILogger<SignIn> Logger
 @inject IStringLocalizer<SignIn> L
@@ -78,7 +78,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var credentials = await CredentialsRepository.GetCredentialsAsync();
+        var credentials = await CredentialsProvider.GetCredentialsAsync();
         if (credentials != null)
         {
             Model.ClientId = credentials.ClientId;

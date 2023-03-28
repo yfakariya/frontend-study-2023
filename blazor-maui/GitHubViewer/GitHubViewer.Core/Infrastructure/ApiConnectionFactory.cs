@@ -11,20 +11,20 @@ namespace GitHubViewer.Infrastructure;
 
 public abstract class ApiConnectionFactory
 {
-	private static readonly ProductHeaderValue ProductInformation = new ("GitHubViewer", "0.1");
+	private static readonly ProductHeaderValue ProductInformation = new("GitHubViewer", "0.1");
 	private static readonly IJsonSerializer JsonSerializer = new SimpleJsonSerializer();
 
-	private readonly CredentialsRepository _credentialsRepository;
+	private readonly ICredentialsProvider _credentialsProvider;
 	private readonly OctokitHttpClientFactory _httpClientFactory;
 	private readonly IOptionsMonitor<GitHubOptions> _options;
 
 	protected ApiConnectionFactory(
-		CredentialsRepository credentialsRepository,
+		ICredentialsProvider credentialsProvider,
 		IHttpMessageHandlerFactory messageHandlerFactory,
 		IOptionsMonitor<GitHubOptions> options
 	)
 	{
-		_credentialsRepository = credentialsRepository;
+		_credentialsProvider = credentialsProvider;
 		_httpClientFactory = new OctokitHttpClientFactory(messageHandlerFactory);
 		_options = options;
 	}
@@ -34,14 +34,14 @@ public abstract class ApiConnectionFactory
 			new Connection(
 				ProductInformation,
 				_options.CurrentValue.BaseAddress,
-				await GetCredentialStoreAsync(_credentialsRepository, cancellationToken).ConfigureAwait(false),
+				await GetCredentialStoreAsync(_credentialsProvider, cancellationToken).ConfigureAwait(false),
 				_httpClientFactory.CreateClient(),
 				JsonSerializer
 			)
 		);
 
 	protected abstract ValueTask<ICredentialStore> GetCredentialStoreAsync(
-		CredentialsRepository credentialsRepository,
+		ICredentialsProvider credentialsProvider,
 		CancellationToken cancellationToken
 	);
 

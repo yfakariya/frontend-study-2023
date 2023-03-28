@@ -11,14 +11,14 @@ namespace GitHubViewer.Infrastructure;
 public sealed class OAuth2ApiConnectionFactory : ApiConnectionFactory
 {
 	public OAuth2ApiConnectionFactory(
-		CredentialsRepository credentialsRepository,
+		ICredentialsProvider credentialsProvider,
 		IHttpMessageHandlerFactory messageHandlerFactory,
 		IOptionsMonitor<GitHubOptions> options
-	) : base(credentialsRepository, messageHandlerFactory, options) { }
+	) : base(credentialsProvider, messageHandlerFactory, options) { }
 
 	protected override ValueTask<ICredentialStore> GetCredentialStoreAsync(
-		CredentialsRepository credentialsRepository,
+		ICredentialsProvider credentialsProvider,
 		CancellationToken cancellationToken
 	)
-		=> credentialsRepository.GetOAuth2CredentialStore(cancellationToken);
+		=> credentialsProvider.GetOAuth2CredentialStore(cancellationToken);
 }

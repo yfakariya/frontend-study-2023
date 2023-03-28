@@ -20,7 +20,7 @@ public static class ApplicationSetUp
 		IServiceCollection services,
 		Registration<IBrowserLauncher> browserLauncherRegistration,
 		Registration<IWindowTitleAccessor> windowTitleAccessorRegistration,
-		Registration<CredentialsRepository> credentialsRepositoryRegistration,
+		Registration<ICredentialsProvider> credentialsProviderRegistration,
 		Registration<IGitHubAuthenticator> gitHubAuthenticatorRegistration,
 		Registration<AuthenticationStateProvider> authenticationStateProviderRegistration,
 		GenericRegistration<ISessionStorage<ValueTuple>> sessionStorageRegistration
@@ -55,7 +55,7 @@ public static class ApplicationSetUp
 
 		browserLauncherRegistration.Register(services);
 		windowTitleAccessorRegistration.Register(services);
-		credentialsRepositoryRegistration.Register(services);
+		credentialsProviderRegistration.Register(services);
 		gitHubAuthenticatorRegistration.Register(services);
 		authenticationStateProviderRegistration.Register(services);
 		sessionStorageRegistration.Register(services);

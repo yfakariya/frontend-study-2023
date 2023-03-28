@@ -28,10 +28,14 @@ public static class MauiProgram
 			builder.Services,
 			Registration<IBrowserLauncher>.Singleton<MauiBrowserLauncher>(),
 			Registration<IWindowTitleAccessor>.Singleton<MauiWindowTitleAccessor>(),
-			Registration<CredentialsRepository>.Singleton<MauiSecureStorageCredentialsRepository>(),
+			Registration<ICredentialsProvider>.Singleton<MauiSecureStorageCredentialsRepository>(),
 			Registration<IGitHubAuthenticator>.Singleton<MauiGitHubAuthenticator>(),
 			Registration<AuthenticationStateProvider>.Singleton<GitHubAuthenticationStateProvider>(),
 			GenericRegistration<ISessionStorage<ValueTuple>>.Singleton<InMemorySessionStorage<ValueTuple>>()
+		);
+
+		builder.Services.AddSingleton<CredentialsRepository>(
+			p => (MauiSecureStorageCredentialsRepository)p.GetRequiredService<ICredentialsProvider>()
 		);
 
 #if WINDOWS

@@ -2,12 +2,9 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-using Octokit;
-using Octokit.Internal;
-
 namespace GitHubViewer.Authentication;
 
-public abstract class CredentialsRepository
+public abstract class CredentialsRepository : ICredentialsProvider
 {
 	private OAuth2Credentials? _inMemory;
 
@@ -44,26 +41,4 @@ public abstract class CredentialsRepository
 	}
 
 	protected abstract ValueTask ClearPersistedCredentialsAsync(CancellationToken cancellationToken);
-
-	public async ValueTask<ICredentialStore> GetBasicAuthenticationCredentialStore(CancellationToken cancellationToken = default)
-	{
-		var underlying = await GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
-		return
-			new InMemoryCredentialStore(
-				underlying == null
-				? Credentials.Anonymous
-				: new Credentials(underlying.ClientId, underlying.ClientSecret, AuthenticationType.Basic)
-			);
-	}
-	public async ValueTask<ICredentialStore> GetOAuth2CredentialStore(CancellationToken cancellationToken = default)
-	{
-		var underlying = await GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
-		return
-			new InMemoryCredentialStore(
-				underlying == null
-				? Credentials.Anonymous
-				// We must send as Authorization: Bearer
-				: new Credentials(underlying.AccessToken, AuthenticationType.Bearer)
-			);
-	}
 }
