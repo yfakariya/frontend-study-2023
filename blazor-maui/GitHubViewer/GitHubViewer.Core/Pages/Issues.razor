@@ -2,6 +2,8 @@
 @using GitHubViewer.Infrastructure;
 @using GitHubViewer.Issues;
 @using System.Globalization;
+@using System.Text.Json;
+
 @attribute [Route(Routes.Issues)]
 @attribute [Authorize]
 
@@ -115,6 +117,16 @@
 
 
 @code {
+    // Work around for https://github.com/octokit/octokit.net/issues/1762
+    static readonly JsonSerializerOptions JsonSerializerOptions =
+        new JsonSerializerOptions(JsonSerializerOptions.Default)
+        {
+            Converters =
+            {
+                StringEnumJsonConverterFactory.Instance,
+            }
+        };
+
     string? Error { get; set; }
 
     ViewModel Model { get; set; } = new();
@@ -161,10 +173,10 @@
             {
                 Page = page;
 
-                var (resultFound, result) = await SessionStorage.GetAsync<IList<Octokit.Issue>>(StorageKeys.Result);
+                var (resultFound, result) = await SessionStorage.GetAsync<string>(StorageKeys.Result);
                 if (resultFound)
                 {
-                    SearchedIssues = result;
+                    SearchedIssues = JsonSerializer.Deserialize<Octokit.Issue[]>(result, JsonSerializerOptions) ?? Array.Empty<Octokit.Issue>();
                     StateHasChanged();
                     return;
                 }
@@ -247,7 +259,7 @@
             SearchedIssues = (await IssueRepository.GetIssuesAsync(condition, Page).ConfigureAwait(false)).ToArray();
             Page = page;
 
-            await SessionStorage.SetAsync(StorageKeys.Result, SearchedIssues);
+            await SessionStorage.SetAsync(StorageKeys.Result, JsonSerializer.Serialize(SearchedIssues, JsonSerializerOptions));
         }
         catch (Exception ex)
         {
