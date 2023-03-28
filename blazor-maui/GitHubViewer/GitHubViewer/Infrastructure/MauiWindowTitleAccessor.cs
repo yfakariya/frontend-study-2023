@@ -4,7 +4,7 @@
 
 namespace GitHubViewer.Infrastructure
 {
-	internal class MauiWindowTitleAccessor : IWindowTitleAccessor
+	internal sealed class MauiWindowTitleAccessor : IWindowTitleAccessor
 	{
 		public bool HasWindow => true;
 
