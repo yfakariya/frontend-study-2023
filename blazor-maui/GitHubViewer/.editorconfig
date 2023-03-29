@@ -80,7 +80,7 @@ dotnet_diagnostic.CA5359.severity = warning
 dotnet_diagnostic.IDE0021.severity = silent
 
 # 4 width tab indentation
-[*.{cs,tt,ttinclude}]
+[*.{cs,tt,ttinclude,razor,cshtml}]
 indent_style = tab
 tab_width = 4
 
@@ -90,7 +90,7 @@ indent_style = space
 indent_size = 2
 
 # Based on https://github.com/dotnet/roslyn/blob/main/.editorconfig and https://github.com/dotnet/runtime/blob/main/.editorconfig
-[*.cs]
+[*.{cs,razor,cshtml}]
 
 # IDE0055: Fix formatting
 dotnet_diagnostic.IDE0055.severity = warning
@@ -336,3 +336,14 @@ csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_pattern_matching = true:silent
 csharp_style_prefer_not_pattern = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
+
+dotnet_remove_unnecessary_suppression_exclusions = true:warning
+
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning
+dotnet_style_allow_statement_immediately_after_block_experimental = false:warning
+
+csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = false:warning
+csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = false:warning
+csharp_style_allow_blank_line_after_token_in_conditional_expression_experimental = false:warning
+csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false:warning
+csharp_style_allow_embedded_statements_on_same_line_experimental = false:warning
