@@ -3,6 +3,7 @@
 @using GitHubViewer.Issues;
 @using System.Globalization;
 @using System.Text.Json;
+@using System.Diagnostics;
 
 @attribute [Route(Routes.Issues)]
 @attribute [Authorize]
@@ -153,38 +154,48 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var (conditionFound, condition) = await SessionStorage.GetAsync<IssueSearchCondition>(StorageKeys.Condition);
-        if (conditionFound)
+        IsLoading = true;
+        StateHasChanged();
+
+        try
         {
-            Model =
-                new ViewModel
-                    {
-                        IssuesPerPage = condition.IssuesPerPage,
-                        Labels = condition.Labels,
-                        Repository = condition.Repository ?? String.Empty,
-                        Since = condition.Since?.LocalDateTime,
-                        SortDirection = condition.SortDirection,
-                        SortProperty = condition.SortProperty,
-                        State = condition.State,
-                    };
-
-            var (pageFound, page) = await SessionStorage.GetAsync<int>(StorageKeys.Page);
-            if (pageFound)
+            var (conditionFound, condition) = await SessionStorage.GetAsync<IssueSearchCondition>(StorageKeys.Condition);
+            if (conditionFound)
             {
-                Page = page;
+                Model =
+                    new ViewModel
+                        {
+                            IssuesPerPage = condition.IssuesPerPage,
+                            Labels = condition.Labels,
+                            Repository = condition.Repository ?? String.Empty,
+                            Since = condition.Since?.LocalDateTime,
+                            SortDirection = condition.SortDirection,
+                            SortProperty = condition.SortProperty,
+                            State = condition.State,
+                        };
 
-                var (resultFound, result) = await SessionStorage.GetAsync<string>(StorageKeys.Result);
-                if (resultFound)
+                var (pageFound, page) = await SessionStorage.GetAsync<int>(StorageKeys.Page);
+                if (pageFound)
                 {
-                    SearchedIssues = JsonSerializer.Deserialize<Octokit.Issue[]>(result, JsonSerializerOptions) ?? Array.Empty<Octokit.Issue>();
-                    StateHasChanged();
-                    return;
+                    Page = page;
+
+                    var (resultFound, result) = await SessionStorage.GetAsync<string>(StorageKeys.Result);
+                    if (resultFound)
+                    {
+                        SearchedIssues = JsonSerializer.Deserialize<Octokit.Issue[]>(result, JsonSerializerOptions) ?? Array.Empty<Octokit.Issue>();
+                        StateHasChanged();
+                        return;
+                    }
                 }
             }
-        }
 
-        // initial search
-        await SearchIssues(Page);
+            // initial search
+            await SearchIssuesCore(Page);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     void OnInvalidSubmit()
@@ -221,13 +232,18 @@
         await SearchIssues(Page);
     }
 
-    async Task SearchIssues(int page)
+    Task SearchIssues(int page)
     {
         if (IsLoading)
         {
-            return;
+            return Task.CompletedTask;
         }
 
+        return SearchIssuesCore(page);
+    }
+
+    async Task SearchIssuesCore(int page)
+    {
         IsInvalid = false;
         try
         {
