@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace GitHubViewer.Data;
+namespace GitHubViewer.Identity.Data;
 
 public class GitHubViewerUserContext : IdentityDbContext
 {

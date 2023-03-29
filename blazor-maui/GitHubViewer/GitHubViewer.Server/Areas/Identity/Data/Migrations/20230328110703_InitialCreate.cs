@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace GitHubViewer.Areas.Identity.Data.Migrations
+namespace GitHubViewer.Identity.Data.Migrations
 {
 	/// <inheritdoc />
 	public partial class InitialCreate : Migration

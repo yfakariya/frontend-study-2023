@@ -27,15 +27,4 @@
     <Content Include="..\wwwroot\**\*.*" LinkBase="wwwroot" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Areas\Identity\Pages\**" />
-    <Content Remove="Areas\Identity\Pages\**" />
-    <EmbeddedResource Remove="Areas\Identity\Pages\**" />
-    <None Remove="Areas\Identity\Pages\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Identity\Pages\" />
-  </ItemGroup>
-
 </Project>
