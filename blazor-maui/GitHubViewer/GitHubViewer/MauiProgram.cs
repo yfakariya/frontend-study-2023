@@ -26,6 +26,7 @@ public static class MauiProgram
 #endif
 		ApplicationSetUp.RegisterServices(
 			builder.Services,
+			builder.Configuration,
 			Registration<IBrowserLauncher>.Singleton<MauiBrowserLauncher>(),
 			Registration<IWindowTitleAccessor>.Singleton<MauiWindowTitleAccessor>(),
 			Registration<ICredentialsProvider>.Singleton<MauiSecureStorageCredentialsRepository>(),

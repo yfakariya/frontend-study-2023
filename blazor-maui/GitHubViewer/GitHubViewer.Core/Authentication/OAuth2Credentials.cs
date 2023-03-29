@@ -4,4 +4,6 @@
 
 namespace GitHubViewer.Authentication;
 
+// TODO: remove ClientId and ClientSecret and store separately
+
 public record OAuth2Credentials(string ClientId, string ClientSecret, string AccessToken);

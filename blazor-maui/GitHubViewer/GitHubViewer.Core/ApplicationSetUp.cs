@@ -6,6 +6,7 @@ using GitHubViewer.Authentication;
 using GitHubViewer.Infrastructure;
 using GitHubViewer.Issues;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
@@ -18,6 +19,7 @@ public static class ApplicationSetUp
 {
 	public static void RegisterServices(
 		IServiceCollection services,
+		IConfiguration configuration,
 		Registration<IBrowserLauncher> browserLauncherRegistration,
 		Registration<IWindowTitleAccessor> windowTitleAccessorRegistration,
 		Registration<ICredentialsProvider> credentialsProviderRegistration,
@@ -33,8 +35,12 @@ public static class ApplicationSetUp
 			}
 		);
 		services.AddOptions();
-		services.AddOptions<AuthenticationOptions>();
-		services.AddOptions<GitHubOptions>();
+		services.AddOptions<AuthenticationOptions>()
+			.Bind(configuration.GetSection("Authentication"))
+			.ValidateDataAnnotations();
+		services.AddOptions<GitHubOptions>()
+			.Bind(configuration.GetSection("GitHub"))
+			.ValidateDataAnnotations();
 		services.AddAuthorizationCore();
 		services.AddHttpClient();
 		services.AddHttpClient(HttpClientNames.Octokit)

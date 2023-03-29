@@ -4,7 +4,6 @@
 
 namespace GitHubViewer.Authentication
 {
-	// TODO: It looks unnecessary (might be required in Wasm)
 	public sealed class AuthenticationOptions
 	{
 		public const string DefaultSignInRoute = "/SignIn";

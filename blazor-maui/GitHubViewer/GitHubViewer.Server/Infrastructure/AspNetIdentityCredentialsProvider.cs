@@ -2,43 +2,33 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
-using System.Security.Claims;
-using GitHubViewer.Areas.Identity.Data;
 using GitHubViewer.Authentication;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
 
 namespace GitHubViewer.Infrastructure;
 
 public sealed class AspNetIdentityCredentialsProvider : ICredentialsProvider
 {
-	private readonly AspNetUserManager<GitHubViewerUser> _userManager;
+	private readonly IHttpContextAccessor _httpContextAccessor;
 
-	public AspNetIdentityCredentialsProvider(AspNetUserManager<GitHubViewerUser> userManager)
+	public AspNetIdentityCredentialsProvider(IHttpContextAccessor httpContextAccessor)
 	{
-		_userManager = userManager;
+		_httpContextAccessor = httpContextAccessor;
 	}
 
 	public async ValueTask<OAuth2Credentials?> GetCredentialsAsync(CancellationToken cancellationToken = default)
 	{
-		var principal = ClaimsPrincipal.Current;
-		if (principal == null)
+		var context = _httpContextAccessor.HttpContext;
+		if (context != null)
 		{
-			return null;
+			var accessToken = await context.GetTokenAsync("access_token").ConfigureAwait(false);
+
+			if (!String.IsNullOrEmpty(accessToken))
+			{
+				return new OAuth2Credentials(String.Empty, String.Empty, accessToken);
+			}
 		}
 
-		var user = await _userManager.GetUserAsync(principal).ConfigureAwait(false);
-		if (user == null)
-		{
-			return null;
-		}
-
-		var token = await _userManager.GetAuthenticationTokenAsync(user, "github", "access_token").ConfigureAwait(false);
-
-		if (token == null)
-		{
-			return null;
-		}
-
-		return new OAuth2Credentials(String.Empty, String.Empty, token);
+		return null;
 	}
 }

@@ -9,7 +9,7 @@
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,4 +26,16 @@
   <ItemGroup>
     <Content Include="..\wwwroot\**\*.*" LinkBase="wwwroot" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Identity\Pages\**" />
+    <Content Remove="Areas\Identity\Pages\**" />
+    <EmbeddedResource Remove="Areas\Identity\Pages\**" />
+    <None Remove="Areas\Identity\Pages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Pages\" />
+  </ItemGroup>
+
 </Project>
