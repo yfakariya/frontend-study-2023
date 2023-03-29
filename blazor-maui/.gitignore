@@ -16,6 +16,9 @@
 # SQLite
 *.db
 
+# Local settings for wasm
+*.local.cs
+
 # Mono auto generated files
 mono_crash.*
 
