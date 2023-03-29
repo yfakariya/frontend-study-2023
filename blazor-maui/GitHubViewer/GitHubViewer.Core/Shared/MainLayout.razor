@@ -100,7 +100,7 @@
         }
 
         // Prevent infinite-loop
-        if (WindowTitleAccessor.Title != AppTitle)
+        if (WindowTitleAccessor.HasWindow && WindowTitleAccessor.Title != AppTitle)
         {
             WindowTitleAccessor.Title = AppTitle;
             StateHasChanged();
