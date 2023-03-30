@@ -81,7 +81,8 @@ var supportedCultures =
 	new[]
 	{
 		"en-US",
-		"ja-JP"
+		"ja-JP",
+		"ja",
 	};
 
 app.UseRequestLocalization(
