@@ -8,7 +8,6 @@ using System.Reflection;
 using AspNet.Security.OAuth.GitHub;
 using GitHubViewer;
 using GitHubViewer.Authentication;
-using GitHubViewer.Identity.Data;
 using GitHubViewer.Infrastructure;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;

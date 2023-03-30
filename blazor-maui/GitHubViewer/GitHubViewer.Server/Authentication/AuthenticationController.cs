@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GitHubViewer.Identity.Controllers;
+namespace GitHubViewer.Authentication;
 
 public class AuthenticationController : Controller
 {
