@@ -121,7 +121,6 @@ internal sealed class HttpListenerAuthenticationBrowser : IdentityModel.OidcClie
 		return (String.Empty, String.Empty);
 	}
 
-
 	private static class Errors
 	{
 		/// <summary>

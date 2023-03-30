@@ -38,7 +38,6 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 			? path
 			: "/" + path;
 
-
 		if (!path.EndsWith("/", StringComparison.Ordinal))
 		{
 			path += "/";
@@ -62,8 +61,8 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 		catch { }
 	}
 
-	public ValueTask<string> PrepareAsync(CancellationToken cancellationToken  = default)
-	{ 
+	public ValueTask<string> PrepareAsync(CancellationToken cancellationToken = default)
+	{
 		foreach (var port in Enumerable.Range(_minimumPortInclusive, _maximumPortInclusive - _minimumPortInclusive + 1))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -157,7 +156,6 @@ internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 					throw new NotImplementedException("HttpCode not supported: " + messageAndCode.HttpCode);
 				}
 			}
-
 		}
 		finally
 		{
