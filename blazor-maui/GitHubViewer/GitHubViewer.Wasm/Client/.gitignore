@@ -1,0 +1,5 @@
+wwwroot/*.js
+wwwroot/*.js.map
++wwwroot/service-worker*.js
++wwwroot/service-worker*.js.map
+

@@ -2,6 +2,7 @@
 // This file is licensed under Apache2 license.
 // See the LICENSE in the project root for more information.
 
+using System.Reflection;
 using GitHubViewer.Authentication;
 using GitHubViewer.Infrastructure;
 using GitHubViewer.Issues;
@@ -20,6 +21,7 @@ public static class ApplicationSetUp
 	public static void RegisterServices(
 		IServiceCollection services,
 		IConfiguration configuration,
+		IEnumerable<Assembly> componentAssemblies,
 		Registration<IBrowserLauncher> browserLauncherRegistration,
 		Registration<IWindowTitleAccessor> windowTitleAccessorRegistration,
 		Registration<ICredentialsProvider> credentialsProviderRegistration,
@@ -59,6 +61,10 @@ public static class ApplicationSetUp
 		services.AddScoped<GitHubTokenInformation>();
 
 		services.AddScoped<IIssueRepository, IssueRepository>();
+
+		services.AddSingleton<IAdditionalComponentAssembliesProvider>(
+			_ => new AdditionalComponentAssembliesProvider(componentAssemblies)
+		);
 
 		browserLauncherRegistration.Register(services);
 		windowTitleAccessorRegistration.Register(services);

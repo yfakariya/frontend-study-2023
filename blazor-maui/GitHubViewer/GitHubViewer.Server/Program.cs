@@ -4,6 +4,7 @@
 
 #pragma warning disable CA1852
 
+using System.Reflection;
 using AspNet.Security.OAuth.GitHub;
 using GitHubViewer;
 using GitHubViewer.Authentication;
@@ -50,6 +51,7 @@ builder.Services.AddServerSideBlazor();
 ApplicationSetUp.RegisterServices(
 	builder.Services,
 	builder.Configuration,
+	Array.Empty<Assembly>(),
 	Registration<IBrowserLauncher>.Singleton<NullBrowserLauncher>(),
 	Registration<IWindowTitleAccessor>.Singleton<NullWindowTitleAccessor>(),
 	Registration<ICredentialsProvider>.Scoped<AspNetIdentityCredentialsProvider>(),

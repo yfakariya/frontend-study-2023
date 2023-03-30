@@ -1,5 +1,9 @@
+@using GitHubViewer.Infrastructure;
+
+@inject IAdditionalComponentAssembliesProvider ComponentAssembliesProvider
+
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Main).Assembly">
+    <Router AppAssembly="@typeof(Main).Assembly" AdditionalAssemblies="ComponentAssembliesProvider.GetAssemblies()">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>

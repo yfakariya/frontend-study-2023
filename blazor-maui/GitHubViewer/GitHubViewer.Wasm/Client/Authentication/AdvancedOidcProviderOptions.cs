@@ -16,4 +16,26 @@ public sealed class AdvancedOidcProviderOptions : OidcProviderOptions
 {
 	[JsonPropertyName("client_secret")]
 	public string? ClientSecret { get; set; }
+
+	public OidcMetadata? Metadata { get; set; }
+
+	public bool DisablesSilentSignIn { get; set; }
+
+	public bool? SkipUserInfo { get; set; }
 }
+
+public sealed class OidcMetadata
+{
+	[JsonPropertyName("issuer")]
+	public string IssuerName { get; set; } = null!;
+
+	[JsonPropertyName("authorization_endpoint")]
+	public string AuthorizeEndpoint { get; set; } = null!;
+
+	[JsonPropertyName("token_endpoint")]
+	public string TokenEndpoint { get; set; } = null!;
+
+	[JsonPropertyName("check_session_iframe")]
+	public string? CheckSessionIframe { get; set; } = null!;
+}
+

@@ -18,7 +18,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"))
+	.AddDebug();
 
 // Based on AddOidcAuthentication.
 // Register post configuration handler for our DefaultAdvancedOidcOptionsConfiguration.
@@ -34,11 +35,22 @@ builder.Services.AddRemoteAuthentication<RemoteAuthenticationState, RemoteUserAc
 		// Use server API instead, or use OIDC with PKCE instead of OAuth.
 		(var clientId, var clientSecret) = Settings.GetOAuthConfiguration();
 
+		const string AuthorityAndIssuer = "https://api.github.com";
 		// For github
+		options.ProviderOptions.Authority = AuthorityAndIssuer;
 		options.ProviderOptions.ClientId = clientId ?? String.Empty;
 		options.ProviderOptions.ClientSecret = clientSecret ?? String.Empty;
+		options.ProviderOptions.DisablesSilentSignIn = true;
+		options.ProviderOptions.ResponseType = "code";
+		options.ProviderOptions.Metadata =
+			new()
+			{
+				AuthorizeEndpoint = "https://github.com/login/oauth/authorize",
+				TokenEndpoint = "https://github.com/login/oauth/access_token",
+				IssuerName = AuthorityAndIssuer,
+			};
 
-		options.AuthenticationPaths.LogInCallbackPath = Uris.ServerCallbackPath;
+		options.ProviderOptions.RedirectUri = $"{builder.HostEnvironment.BaseAddress.TrimEnd('/')}/{Uris.ServerCallbackPath.TrimStart('/')}";
 
 		// Clear OIDC scopes because GitHub is not OIDC compliant
 		options.ProviderOptions.DefaultScopes.Clear();
@@ -51,6 +63,7 @@ builder.Services.AddRemoteAuthentication<RemoteAuthenticationState, RemoteUserAc
 ApplicationSetUp.RegisterServices(
 	builder.Services,
 	builder.Configuration,
+	new[] { typeof(Program).Assembly },
 	Registration<IBrowserLauncher>.Singleton<NullBrowserLauncher>(),
 	Registration<IWindowTitleAccessor>.Singleton<NullWindowTitleAccessor>(),
 	Registration<ICredentialsProvider>.Scoped<WebAssemblyTokenCredentialsProvider>(),
