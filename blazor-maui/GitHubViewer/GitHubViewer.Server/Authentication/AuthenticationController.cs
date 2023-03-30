@@ -11,13 +11,13 @@ namespace GitHubViewer.Authentication;
 
 public class AuthenticationController : Controller
 {
-	[HttpGet("~/Identity/SignIn")]
-	[HttpPost("~/Identity/SignIn")]
+	[HttpGet("~/SignIn")]
+	[HttpPost("~/SignIn")]
 	public IActionResult SignIn()
 		=> Challenge(new AuthenticationProperties { RedirectUri = "/" }, GitHubAuthenticationDefaults.AuthenticationScheme);
 
-	[HttpGet("~/Identity/SignOut")]
-	[HttpPost("~/Identity/SignOut")]
+	[HttpGet("~/SignOut")]
+	[HttpPost("~/SignOut")]
 	public IActionResult SignOutCurrentUser()
 		=> SignOut(new AuthenticationProperties { RedirectUri = "/" },
 			// Clear session cookie
