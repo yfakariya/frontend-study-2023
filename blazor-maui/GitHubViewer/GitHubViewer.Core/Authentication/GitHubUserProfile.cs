@@ -29,22 +29,25 @@ public class GitHubUserProfile
 		}
 
 		var claims =
-			new List<Claim>(capacity: scopes.Count + 3)
+			new List<Claim>(capacity: 5)
 			{
 				new Claim(ClaimTypes.NameIdentifier, currentUser.Login?.Trim()!),
 			};
 
 		if (!String.IsNullOrEmpty(currentUser.Name))
 		{
-			claims.Add(new Claim(ClaimTypes.Name, currentUser.Name));
+			claims.Add(new Claim("urn:github:name", currentUser.Name));
+		}
+
+		if (!String.IsNullOrEmpty(currentUser.Url))
+		{
+			claims.Add(new Claim("urn:github:url", currentUser.Url));
 		}
 
 		if (!String.IsNullOrEmpty(currentUser.Email))
 		{
 			claims.Add(new Claim(ClaimTypes.Email, currentUser.Email));
 		}
-
-		claims.AddRange(scopes.Select(s => new Claim(ClaimsPrincipals.ScopeType, s)));
 
 		return
 			new ClaimsPrincipal(
