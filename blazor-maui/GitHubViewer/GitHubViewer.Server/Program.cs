@@ -19,14 +19,16 @@ var connectionString = builder.Configuration.GetConnectionString("GitHubViewerUs
 
 builder.Services.AddDbContext<GitHubViewerUserContext>(options => options.UseSqlite(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<GitHubViewerUserContext>();
-
+// Based on IdentityServiceCollectionUIExtensions.AddDefaultIdentity of Microsoft.AspNetCore.Identity.UI package.
+// Register services without UI to avoid unexpected direct access to UIs which we do not support.
 builder.Services.AddAuthentication(
 	options =>
 	{
 		options.DefaultScheme = GitHubAuthenticationDefaults.AuthenticationScheme;
+		options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 	}
 ).AddGitHub(
+	// With github registration
 	options =>
 	{
 		options.ClientId = builder.Configuration["GitHub:ClientId"] ?? String.Empty;
@@ -40,7 +42,18 @@ builder.Services.AddAuthentication(
 		options.Scope.Add("user:email"); // for ASP.NET Core Identity
 		options.Scope.Add("public_repo");
 	}
-);
+).AddIdentityCookies();
+
+// Additional registration based on AddDefaultIdentity
+builder.Services.AddIdentityCore<IdentityUser>(
+	options =>
+	{
+		options.Stores.MaxLengthForKeys = 128;
+	}
+).AddDefaultTokenProviders()
+.AddSignInManager()
+// And register user store
+.AddEntityFrameworkStores<GitHubViewerUserContext>();
 
 builder.Services.AddLocalization();
 
