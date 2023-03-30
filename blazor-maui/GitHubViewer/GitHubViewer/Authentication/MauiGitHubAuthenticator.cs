@@ -30,6 +30,7 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	private readonly IOAuthHelperFactory _oauthHelperFactory;
 	private readonly IOptionsMonitor<GitHubOptions> _options;
 	private readonly IHttpClientFactory _httpClientFactory;
+	private readonly ILogger _logger;
 	private readonly ILoggerFactory _loggerFactory;
 
 	public ClaimsPrincipal User { get; private set; } = ClaimsPrincipals.Anonymous;
@@ -51,6 +52,7 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 		_credentialStore = credentialStore;
 		_oauthHelperFactory = oauthHelperFactory;
 		_httpClientFactory = httpClientFactory;
+		_logger = loggerFactory.CreateLogger<MauiGitHubAuthenticator>();
 		_loggerFactory = loggerFactory;
 		_options = options;
 	}
@@ -58,21 +60,23 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	public async ValueTask<ClaimsPrincipal> SignInAutomaticallyAsync(CancellationToken cancellationToken = default)
 	{
 		var credentials = await _credentialStore.GetCredentialsAsync(cancellationToken).ConfigureAwait(false);
-		ClaimsPrincipal user;
-		if (credentials == null)
+		var user = ClaimsPrincipals.Anonymous;
+		if (credentials != null)
 		{
-			user = ClaimsPrincipals.Anonymous;
-		}
-		else
-		{
-			var scopes = await _tokenInformation.GetScopesAsync(credentials, cancellationToken).ConfigureAwait(false);
-			user = await _userProfile.GetAuthenticatedUserAsync(scopes, cancellationToken).ConfigureAwait(false);
+			try
+			{
+				var scopes = await _tokenInformation.GetScopesAsync(credentials, cancellationToken).ConfigureAwait(false);
+				user = await _userProfile.GetAuthenticatedUserAsync(scopes, cancellationToken).ConfigureAwait(false);
+			}
+			catch (Octokit.NotFoundException ex)
+			{
+				_logger.LogInformation(ex, "AccessToken should be invalidated.");
+			}
 		}
 
 		OnUserChanged(user);
 		return user;
 	}
-
 
 	public async ValueTask<ClaimsPrincipal> SignInAsync(string clientId, string clientSecret, bool persists, CancellationToken cancellationToken = default)
 	{
@@ -80,58 +84,82 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 
 		if (credentials == null || credentials.ClientId != clientId || credentials.ClientSecret != clientSecret)
 		{
-			var authorityAndIssuer = _options.CurrentValue.BaseAddress.ToString();
+			credentials = await SignInCoreAsync(clientId, clientSecret, persists, cancellationToken).ConfigureAwait(false);
+		}
 
-			using (var helper =
-				_oauthHelperFactory.CreateHelper(
-					RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-						? Uris.WindowsCallbackUri
-						: Uris.MobileCallbackUri
-				)
+		ClaimsPrincipal user;
+		try
+		{
+			user = await GetUserAsync(credentials, cancellationToken).ConfigureAwait(false);
+		}
+		catch (Octokit.NotFoundException ex)
+		{
+			_logger.LogInformation(ex, "AccessToken should be invalidated.");
+			credentials = await SignInCoreAsync(clientId, clientSecret, persists, cancellationToken).ConfigureAwait(false);
+			user = await GetUserAsync(credentials, cancellationToken).ConfigureAwait(false);
+		}
+
+		OnUserChanged(user);
+		return user;
+	}
+
+	private async Task<OAuth2Credentials> SignInCoreAsync(string clientId, string clientSecret, bool persists, CancellationToken cancellationToken)
+	{
+		var authorityAndIssuer = _options.CurrentValue.BaseAddress.ToString();
+
+		OAuth2Credentials credentials;
+		using (var helper =
+			_oauthHelperFactory.CreateHelper(
+				RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+					? Uris.WindowsCallbackUri
+					: Uris.MobileCallbackUri
 			)
-			{
-				var authorizationCodeFlowInformation = await helper.PrepareAsync(cancellationToken).ConfigureAwait(false);
+		)
+		{
+			var authorizationCodeFlowInformation = await helper.PrepareAsync(cancellationToken).ConfigureAwait(false);
 
-				var oidcClient =
-					new OidcClient(
-						new OidcClientOptions
+			var oidcClient =
+				new OidcClient(
+					new OidcClientOptions
+					{
+						Authority = authorityAndIssuer,
+						ClientId = clientId,
+						ClientSecret = clientSecret,
+						Scope = "public_repo",
+						RedirectUri = authorizationCodeFlowInformation.RedirectUri,
+						Browser = helper.Browser,
+						HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),
+						LoggerFactory = _loggerFactory,
+						ProviderInformation = GetGitHubProviderInformation(authorityAndIssuer),
+						LoadProfile = false,
+						Policy =
 						{
-							Authority = authorityAndIssuer,
-							ClientId = clientId,
-							ClientSecret = clientSecret,
-							Scope = "public_repo",
-							RedirectUri = authorizationCodeFlowInformation.RedirectUri,
-							Browser = helper.Browser,
-							HttpClientFactory = o => _httpClientFactory.CreateClient(o.Authority),
-							LoggerFactory = _loggerFactory,
-							ProviderInformation = GetGitHubProviderInformation(authorityAndIssuer),
-							LoadProfile = false,
-							Policy =
-							{
 								Discovery =
 								{
 									RequireKeySet = false,
 								},
-							},
-						}
-					);
+						},
+					}
+				);
 
-				var result = await oidcClient.LoginAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-				if (result.IsError)
-				{
-					ThrowAuthenticationException(result);
-				}
-
-				credentials = new OAuth2Credentials(clientId, clientSecret, result.AccessToken);
+			var result = await oidcClient.LoginAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+			if (result.IsError)
+			{
+				ThrowAuthenticationException(result);
 			}
 
-			await _credentialStore.SetCredentialsAsync(credentials, persists: persists, cancellationToken: cancellationToken).ConfigureAwait(false);
+			credentials = new OAuth2Credentials(clientId, clientSecret, result.AccessToken);
 		}
 
+		await _credentialStore.SetCredentialsAsync(credentials, persists: persists, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+		return credentials;
+	}
+
+	private async Task<ClaimsPrincipal> GetUserAsync(OAuth2Credentials credentials, CancellationToken cancellationToken)
+	{
 		var scopes = await _tokenInformation.GetScopesAsync(credentials, cancellationToken).ConfigureAwait(false);
-		var user = await _userProfile.GetAuthenticatedUserAsync(scopes, cancellationToken).ConfigureAwait(false);
-		OnUserChanged(user);
-		return user;
+		return await _userProfile.GetAuthenticatedUserAsync(scopes, cancellationToken).ConfigureAwait(false);
 	}
 
 	public async ValueTask SignOutAsync(bool clearsPersistedData, CancellationToken cancellationToken = default)
@@ -155,10 +183,10 @@ internal sealed class MauiGitHubAuthenticator : IGitHubAuthenticator
 	}
 
 	[DoesNotReturn]
-	private static void ThrowAuthenticationException(Result result) =>
-		throw new AuthenticationException(
-			String.IsNullOrEmpty(result.ErrorDescription) ?
-				result.Error :
-				$"{result.Error}: {result.ErrorDescription}"
+	private static void ThrowAuthenticationException(Result result)
+		=> throw new AuthenticationException(
+			String.IsNullOrEmpty(result.ErrorDescription)
+				? result.Error
+				: $"{result.Error}: {result.ErrorDescription}"
 		);
 }
