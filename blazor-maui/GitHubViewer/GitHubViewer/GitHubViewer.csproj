@@ -89,6 +89,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Update="Localization\Pages\SignIn.Display.Designer.cs">
+      <DependentUpon>SignIn.Display.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -99,6 +104,10 @@
     <EmbeddedResource Update="Authentication\AuthenticationResource.resx">
       <LastGenOutput>AuthenticationResource.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Localization\Pages\SignIn.Display.resx">
+      <LastGenOutput>SignIn.Display.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
 

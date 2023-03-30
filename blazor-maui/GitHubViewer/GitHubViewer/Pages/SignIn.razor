@@ -127,12 +127,12 @@
     class ViewModel
     {
         [Required(
-            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceType = typeof(ValidationResources),
             ErrorMessageResourceName = nameof(RequiredAttribute)
         )]
         [MinLength(
             1,
-            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceType = typeof(ValidationResources),
             ErrorMessageResourceName = nameof(MinLengthAttribute)
         )]
         [Display(
@@ -143,12 +143,12 @@
         public string ClientId { get; set; } = default!;
 
         [Required(
-            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceType = typeof(ValidationResources),
             ErrorMessageResourceName = nameof(RequiredAttribute)
         )]
         [MinLength(
             1,
-            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceType = typeof(ValidationResources),
             ErrorMessageResourceName = nameof(MinLengthAttribute)
         )]
         [Display(

@@ -27,7 +27,6 @@ public static class MauiProgram
 		ApplicationSetUp.RegisterServices(
 			builder.Services,
 			builder.Configuration,
-			// TODO: With SignIn/SignOut.razor moving
 			new[] { typeof(MauiProgram).Assembly },
 			Registration<IBrowserLauncher>.Singleton<MauiBrowserLauncher>(),
 			Registration<IWindowTitleAccessor>.Singleton<MauiWindowTitleAccessor>(),

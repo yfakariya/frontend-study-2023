@@ -297,7 +297,7 @@
     {
         [RegularExpression(
             @"^\s*([^\s/]+/[^\s/]+)?\s*$",
-            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceType = typeof(ValidationResources),
             ErrorMessageResourceName = nameof(Repository) + nameof(RegularExpressionAttribute)
         )]
         [Display(
@@ -309,7 +309,7 @@
 
         [Range(
             1, 100,
-            ErrorMessageResourceType = typeof(Validation),
+            ErrorMessageResourceType = typeof(ValidationResources),
             ErrorMessageResourceName = nameof(RangeAttribute)
         )]
         [Display(

@@ -26,15 +26,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Issues.Display.resx</DependentUpon>
     </Compile>
-    <Compile Update="Localization\Pages\SignIn.Display.Designer.cs">
+    <Compile Update="Localization\ValidationResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>SignIn.Display.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Localization\Validation.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Validation.resx</DependentUpon>
+      <DependentUpon>ValidationResources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -47,13 +42,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Issues.Display.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Localization\Pages\SignIn.Display.resx">
+    <EmbeddedResource Update="Localization\ValidationResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>SignIn.Display.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Localization\Validation.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Validation.Designer.cs</LastGenOutput>
+      <LastGenOutput>ValidationResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
