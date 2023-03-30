@@ -66,7 +66,7 @@ ApplicationSetUp.RegisterServices(
 	Array.Empty<Assembly>(),
 	Registration<IBrowserLauncher>.Singleton<NullBrowserLauncher>(),
 	Registration<IWindowTitleAccessor>.Singleton<NullWindowTitleAccessor>(),
-	Registration<ICredentialsProvider>.Scoped<AspNetIdentityCredentialsProvider>(),
+	Registration<IGitHubAccessTokenProvider>.Scoped<AspNetIdentityCredentialsProvider>(),
 	Registration<IGitHubAuthenticator>.Nothing,
 	Registration<AuthenticationStateProvider>.Nothing,
 	GenericRegistration<ISessionStorage<ValueTuple>>.Scoped<ProtectedBrowserSessionStorage<ValueTuple>>()

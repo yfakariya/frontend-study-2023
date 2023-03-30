@@ -24,7 +24,7 @@ public static class ApplicationSetUp
 		IEnumerable<Assembly> componentAssemblies,
 		Registration<IBrowserLauncher> browserLauncherRegistration,
 		Registration<IWindowTitleAccessor> windowTitleAccessorRegistration,
-		Registration<ICredentialsProvider> credentialsProviderRegistration,
+		Registration<IGitHubAccessTokenProvider> credentialsProviderRegistration,
 		Registration<IGitHubAuthenticator> gitHubAuthenticatorRegistration,
 		Registration<AuthenticationStateProvider> authenticationStateProviderRegistration,
 		GenericRegistration<ISessionStorage<ValueTuple>> sessionStorageRegistration
@@ -55,10 +55,8 @@ public static class ApplicationSetUp
 			)
 		);
 
-		services.AddScoped<BasicAuthenticationApiConnectionFactory>();
 		services.AddScoped<OAuth2ApiConnectionFactory>();
 		services.AddScoped<GitHubUserProfile>();
-		services.AddScoped<GitHubTokenInformation>();
 
 		services.AddScoped<IIssueRepository, IssueRepository>();
 

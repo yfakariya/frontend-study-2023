@@ -17,7 +17,7 @@ public class GitHubUserProfile
 		_connectionFactory = connectionFactory;
 	}
 
-	public async Task<ClaimsPrincipal> GetAuthenticatedUserAsync(IReadOnlyCollection<string> scopes, CancellationToken cancellationToken = default)
+	public async Task<ClaimsPrincipal> GetAuthenticatedUserAsync(CancellationToken cancellationToken = default)
 	{
 		var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
 		var usersClient = new UsersClient(connection);

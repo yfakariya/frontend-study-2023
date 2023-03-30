@@ -14,12 +14,12 @@ public abstract class ApiConnectionFactory
 	private static readonly ProductHeaderValue ProductInformation = new("GitHubViewer", "0.1");
 	private static readonly IJsonSerializer JsonSerializer = new SimpleJsonSerializer();
 
-	private readonly ICredentialsProvider _credentialsProvider;
+	private readonly IGitHubAccessTokenProvider _credentialsProvider;
 	private readonly OctokitHttpClientFactory _httpClientFactory;
 	private readonly IOptionsMonitor<GitHubOptions> _options;
 
 	protected ApiConnectionFactory(
-		ICredentialsProvider credentialsProvider,
+		IGitHubAccessTokenProvider credentialsProvider,
 		IHttpMessageHandlerFactory messageHandlerFactory,
 		IOptionsMonitor<GitHubOptions> options
 	)
@@ -41,7 +41,7 @@ public abstract class ApiConnectionFactory
 		);
 
 	protected abstract ValueTask<ICredentialStore> GetCredentialStoreAsync(
-		ICredentialsProvider credentialsProvider,
+		IGitHubAccessTokenProvider credentialsProvider,
 		CancellationToken cancellationToken
 	);
 

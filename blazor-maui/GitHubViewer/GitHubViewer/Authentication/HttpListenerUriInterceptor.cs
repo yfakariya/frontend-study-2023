@@ -8,11 +8,10 @@
 using System.Net;
 using System.Security.Authentication;
 using System.Text;
-using GitHubViewer.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client.Platforms.Shared.Desktop.OsBrowser;
 
-namespace Microsoft.Identity.Client.Platforms.Shared.DefaultOSBrowser;
+namespace GitHubViewer.Authentication;
 
 internal sealed class HttpListenerUriInterceptor : IUriInterceptor
 {

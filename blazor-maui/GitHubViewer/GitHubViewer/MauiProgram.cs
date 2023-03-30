@@ -30,14 +30,14 @@ public static class MauiProgram
 			new[] { typeof(MauiProgram).Assembly },
 			Registration<IBrowserLauncher>.Singleton<MauiBrowserLauncher>(),
 			Registration<IWindowTitleAccessor>.Singleton<MauiWindowTitleAccessor>(),
-			Registration<ICredentialsProvider>.Singleton<MauiSecureStorageCredentialsRepository>(),
+			Registration<IGitHubAccessTokenProvider>.Singleton<MauiSecureStorageCredentialsRepository>(),
 			Registration<IGitHubAuthenticator>.Singleton<MauiGitHubAuthenticator>(),
 			Registration<AuthenticationStateProvider>.Singleton<GitHubAuthenticationStateProvider>(),
 			GenericRegistration<ISessionStorage<ValueTuple>>.Singleton<InMemorySessionStorage<ValueTuple>>()
 		);
 
 		builder.Services.AddSingleton<CredentialsRepository>(
-			p => (MauiSecureStorageCredentialsRepository)p.GetRequiredService<ICredentialsProvider>()
+			p => (MauiSecureStorageCredentialsRepository)p.GetRequiredService<IGitHubAccessTokenProvider>()
 		);
 
 #if WINDOWS

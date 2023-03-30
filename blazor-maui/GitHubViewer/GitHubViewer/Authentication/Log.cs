@@ -43,4 +43,11 @@ internal static partial class Log
 		Message = "Processing a response message to the browser. HttpStatus: {statusCode}"
 	)]
 	public static partial void ProcessingResponseToBrowser(this ILogger logger, HttpStatusCode statusCode);
+
+	[LoggerMessage(
+		EventId = 1011,
+		Level = LogLevel.Information,
+		Message = "Access token is invalidated."
+	)]
+	public static partial void AccessTokenIsInvalidated(this ILogger logger, Exception exception);
 }

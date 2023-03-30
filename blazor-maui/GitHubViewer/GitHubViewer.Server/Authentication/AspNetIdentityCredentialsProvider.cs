@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace GitHubViewer.Authentication;
 
-public sealed class AspNetIdentityCredentialsProvider : ICredentialsProvider
+public sealed class AspNetIdentityCredentialsProvider : IGitHubAccessTokenProvider
 {
 	private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -15,19 +15,9 @@ public sealed class AspNetIdentityCredentialsProvider : ICredentialsProvider
 		_httpContextAccessor = httpContextAccessor;
 	}
 
-	public async ValueTask<OAuth2Credentials?> GetCredentialsAsync(CancellationToken cancellationToken = default)
+	public async ValueTask<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default)
 	{
 		var context = _httpContextAccessor.HttpContext;
-		if (context != null)
-		{
-			var accessToken = await context.GetTokenAsync("access_token").ConfigureAwait(false);
-
-			if (!String.IsNullOrEmpty(accessToken))
-			{
-				return new OAuth2Credentials(String.Empty, String.Empty, accessToken);
-			}
-		}
-
-		return null;
+		return context == null ? null : await context.GetTokenAsync("access_token").ConfigureAwait(false);
 	}
 }

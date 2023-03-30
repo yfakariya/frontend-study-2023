@@ -4,9 +4,12 @@
 
 namespace GitHubViewer.Authentication;
 
-public abstract class CredentialsRepository : ICredentialsProvider
+public abstract class CredentialsRepository : IGitHubAccessTokenProvider
 {
 	private OAuth2Credentials? _inMemory;
+
+	public async ValueTask<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default)
+		=> (await GetCredentialsAsync(cancellationToken).ConfigureAwait(false))?.AccessToken;
 
 	public async ValueTask<OAuth2Credentials?> GetCredentialsAsync(CancellationToken cancellationToken = default)
 	{
@@ -29,6 +32,7 @@ public abstract class CredentialsRepository : ICredentialsProvider
 		{
 			await SaveCredentialsAsync(credentials, cancellationToken).ConfigureAwait(false);
 		}
+
 		_inMemory = credentials;
 	}
 

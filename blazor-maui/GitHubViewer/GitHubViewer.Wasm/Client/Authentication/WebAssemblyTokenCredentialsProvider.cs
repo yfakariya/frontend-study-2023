@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace GitHubViewer.Authentication;
 
-internal sealed class WebAssemblyTokenCredentialsProvider : ICredentialsProvider
+internal sealed class WebAssemblyTokenCredentialsProvider : IGitHubAccessTokenProvider
 {
 	private readonly IAccessTokenProvider _accessTokenProvider;
 
@@ -15,9 +15,9 @@ internal sealed class WebAssemblyTokenCredentialsProvider : ICredentialsProvider
 		_accessTokenProvider = accessTokenProvider;
 	}
 
-	public async ValueTask<OAuth2Credentials?> GetCredentialsAsync(CancellationToken cancellationToken = default)
+	public async ValueTask<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default)
 	{
 		var result = await _accessTokenProvider.RequestAccessToken().ConfigureAwait(false);
-		return result.TryGetToken(out var token) ? new OAuth2Credentials(String.Empty, String.Empty, token.Value) : null;
+		return result.TryGetToken(out var token) ? token.Value : null;
 	}
 }
